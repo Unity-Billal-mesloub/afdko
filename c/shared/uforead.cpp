@@ -2575,10 +2575,10 @@ static int parseXMLContour(ufoCtx h, xmlNodePtr cur, GLIF_Rec* glifRec, abfGlyph
 
          I use the first path operator end point as the start point, and convert this first operator to move-to. */
         if (firstOpRec->opType == linetoType) {
-            /* CHKOFLOW(2);
+            CHKOFLOW(2);
             PUSH(firstOpRec->coords[0]);
             PUSH(firstOpRec->coords[1]);
-            doOp_dt(h, glyph_cb, h->hints.pointName); */
+            doOp_dt(h, glyph_cb, h->hints.pointName);
             firstOpRec->opType = movetoType;
             h->hints.pointName = NULL;
         } else if (firstOpRec->opType == curvetoType) {

@@ -1108,7 +1108,7 @@ def test_cffread_bug1343():
     ('ufo', 'cidfont.subset', 'cidfont_subset.ufo', 'testCID.ufo'),
     ('t1', 'testCID.ufo', 'cidfont_subset.ufo', 'cidfont.subset'),
     (('ufo', 't1'), 'cidfont.subset', 'cidfont_subset.ufo', 'cidfont.subset'),
-    (('t1', 'ufo'), 'testCID.ufo', 'cidfont_subset.ufo', 'testCID.ufo'),
+    (('t1', 'ufo'), 'testCID.ufo', 'cidfont_subset.ufo', 'testCID-roundtrip.ufo'),
     (('t1', 'ufo'), 'groups-100-fdselect.ufo', 'groups-100-fdselect.ufo',
      'groups-100-fdselect.ufo'),
     (('t1', 'ufo'), 'testCID-noFDSelect.ufo', 'testCID-noFDSelect.ufo',
