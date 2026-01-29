@@ -1,101 +1,176 @@
 /*
- * AFDKO Unified Command Invoker
+ * AFDKO Unified Command Invoker (Minimal C++ Dispatcher)
  *
- * This is a git-style unified command dispatcher that routes subcommands
- * to their appropriate implementations (C++ or Python).
+ * This binary provides a fast path for C++ commands only.
+ * Everything else (help, Python commands, unknown commands) is handled by Python.
  *
- * Usage: afdko <command> [options]
+ * Design:
+ * - If argv[1] is a C++ command → dispatch directly (fast, no Python startup)
+ * - Otherwise → invoke Python, which has the full command registry and logic
  *
- * Phase 1: Minimal implementation with just tx command for proof of concept
+ * This keeps the C++ code minimal and maintainable, with Python as the
+ * "source of truth" for help text, command lists, and error messages.
  */
 
 #include <cstdio>
 #include <cstring>
+#include <Python.h>
 
-// FDK_VERSION is referenced by tx_shared.cpp and other tools
-// In the _internal extension, this is defined by Cython and initialized from Python
-// For the standalone binary, we define it here and will set it properly later
-extern "C" char *FDK_VERSION = (char *)"unknown";
+// FDK_VERSION is defined in addfeatures/main.cpp and referenced by other tools
+// TODO: Integrate with build system's version mechanism
+extern "C" char *FDK_VERSION;
 
 // External C++ tool entry points
 extern "C" {
     int main__tx(int argc, char* argv[]);
     int main__sfntedit(int argc, char* argv[]);
+    int main__spot(int argc, char* argv[]);
+    int main__addfeatures(int argc, char* argv[]);
+    int main__detype1(int argc, char* argv[]);
+    int main__type1(int argc, char* argv[]);
+    int main__sfntdiff(int argc, char* argv[]);
+    int main__mergefonts(int argc, char* argv[]);
+    int main__rotatefont(int argc, char* argv[]);
 }
 
-// Command structure
-struct Command {
-    const char* name;
-    const char* abbrev;  // Can be nullptr
-    int (*cpp_main)(int, char**);
-};
-
-// Command registry - Phase 1: Just tx and sfntedit for proof of concept
-static const Command commands[] = {
-    {"tx", nullptr, main__tx},
-    {"sfntedit", "se", main__sfntedit},
-    {nullptr, nullptr, nullptr}  // Sentinel
-};
-
-const Command* find_command(const char* name) {
-    for (int i = 0; commands[i].name != nullptr; i++) {
-        if (strcmp(commands[i].name, name) == 0) {
-            return &commands[i];
-        }
-        if (commands[i].abbrev && strcmp(commands[i].abbrev, name) == 0) {
-            return &commands[i];
-        }
+// Check if a command is a C++ command (fast path)
+// Includes both full names and abbreviations
+static bool is_cpp_command(const char* cmd, int (*&func)(int, char**)) {
+    // tx
+    if (strcmp(cmd, "tx") == 0) {
+        func = main__tx;
+        return true;
     }
-    return nullptr;
+
+    // sfntedit (abbrev: se)
+    if (strcmp(cmd, "sfntedit") == 0 || strcmp(cmd, "se") == 0) {
+        func = main__sfntedit;
+        return true;
+    }
+
+    // spot
+    if (strcmp(cmd, "spot") == 0) {
+        func = main__spot;
+        return true;
+    }
+
+    // addfeatures (abbrev: af)
+    if (strcmp(cmd, "addfeatures") == 0 || strcmp(cmd, "af") == 0) {
+        func = main__addfeatures;
+        return true;
+    }
+
+    // detype1 (abbrev: dt1)
+    if (strcmp(cmd, "detype1") == 0 || strcmp(cmd, "dt1") == 0) {
+        func = main__detype1;
+        return true;
+    }
+
+    // type1 (abbrev: t1)
+    if (strcmp(cmd, "type1") == 0 || strcmp(cmd, "t1") == 0) {
+        func = main__type1;
+        return true;
+    }
+
+    // sfntdiff
+    if (strcmp(cmd, "sfntdiff") == 0) {
+        func = main__sfntdiff;
+        return true;
+    }
+
+    // mergefonts (abbrev: mf)
+    if (strcmp(cmd, "mergefonts") == 0 || strcmp(cmd, "mf") == 0) {
+        func = main__mergefonts;
+        return true;
+    }
+
+    // rotatefont (abbrev: rf)
+    if (strcmp(cmd, "rotatefont") == 0 || strcmp(cmd, "rf") == 0) {
+        func = main__rotatefont;
+        return true;
+    }
+
+    return false;
 }
 
-void print_help() {
-    printf("Usage: afdko <command> [options]\n\n");
-    printf("AFDKO Unified Command Interface\n\n");
-    printf("Available Commands (Phase 1 - Proof of Concept):\n");
+// Invoke Python to handle everything else
+// Python module afdko.invoker has the full command registry and logic
+static int invoke_python(int argc, char* argv[]) {
+    // Initialize Python
+    Py_Initialize();
 
-    for (int i = 0; commands[i].name != nullptr; i++) {
-        if (commands[i].abbrev) {
-            printf("  %-20s (abbrev: %s)\n", commands[i].name, commands[i].abbrev);
-        } else {
-            printf("  %s\n", commands[i].name);
-        }
+    // Build sys.argv from our argc/argv
+    PyObject* py_argv = PyList_New(argc);
+    for (int i = 0; i < argc; i++) {
+        PyObject* arg = PyUnicode_DecodeFSDefault(argv[i]);
+        PyList_SetItem(py_argv, i, arg);
     }
 
-    printf("\nRun 'afdko <command> -h' for command-specific help.\n");
-    printf("\nNote: This is Phase 1 - more commands will be added in subsequent phases.\n");
+    PyObject* sys_module = PyImport_ImportModule("sys");
+    PyObject_SetAttrString(sys_module, "argv", py_argv);
+    Py_DECREF(py_argv);
+    Py_DECREF(sys_module);
+
+    // Import afdko.invoker and call main()
+    PyObject* invoker_module = PyImport_ImportModule("afdko.invoker");
+    if (!invoker_module) {
+        PyErr_Print();
+        fprintf(stderr, "Error: Could not import afdko.invoker module\n");
+        Py_FinalizeEx();
+        return 1;
+    }
+
+    PyObject* main_func = PyObject_GetAttrString(invoker_module, "main");
+    if (!main_func || !PyCallable_Check(main_func)) {
+        PyErr_Print();
+        fprintf(stderr, "Error: Could not find afdko.invoker.main()\n");
+        Py_XDECREF(main_func);
+        Py_DECREF(invoker_module);
+        Py_FinalizeEx();
+        return 1;
+    }
+
+    // Call main() - it will handle sys.exit() internally
+    PyObject* result = PyObject_CallNoArgs(main_func);
+
+    int exit_code = 0;
+    if (!result) {
+        // Exception occurred
+        PyErr_Print();
+        exit_code = 1;
+    } else if (PyLong_Check(result)) {
+        exit_code = PyLong_AsLong(result);
+    }
+    // Note: If result is None, Python main() called sys.exit() and we won't get here
+
+    Py_XDECREF(result);
+    Py_DECREF(main_func);
+    Py_DECREF(invoker_module);
+
+    if (Py_FinalizeEx() < 0) {
+        exit_code = 120;
+    }
+
+    return exit_code;
 }
 
 int main(int argc, char* argv[]) {
-    // No subcommand provided
-    if (argc < 2) {
-        print_help();
-        return 1;
+    // Check if argv[1] is a C++ command (fast path)
+    if (argc >= 2) {
+        int (*cpp_func)(int, char**) = nullptr;
+
+        if (is_cpp_command(argv[1], cpp_func)) {
+            // Fast path: dispatch directly to C++ command
+            // Shift arguments: "afdko tx -dump" becomes "tx -dump"
+            return cpp_func(argc - 1, argv + 1);
+        }
     }
 
-    const char* subcmd = argv[1];
-
-    // Help requested
-    if (strcmp(subcmd, "-h") == 0 ||
-        strcmp(subcmd, "--help") == 0 ||
-        strcmp(subcmd, "help") == 0) {
-        print_help();
-        return 0;
-    }
-
-    // Find the command
-    const Command* cmd = find_command(subcmd);
-    if (!cmd) {
-        fprintf(stderr, "Error: Unknown command '%s'\n", subcmd);
-        fprintf(stderr, "Run 'afdko --help' for usage.\n");
-        return 1;
-    }
-
-    // Shift arguments: "afdko tx -dump" becomes "tx -dump"
-    // The subcommand's main expects argv[0] to be the command name
-    argc--;
-    argv++;
-
-    // Dispatch to the C++ command
-    return cmd->cpp_main(argc, argv);
+    // Everything else: invoke Python
+    // Python will handle:
+    // - help (afdko --help, afdko -h)
+    // - Python commands (afdko makeotf, etc.)
+    // - unknown commands (afdko invalid-cmd)
+    // - no arguments (afdko)
+    return invoke_python(argc, argv);
 }

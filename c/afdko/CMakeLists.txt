@@ -12,15 +12,25 @@ add_executable(afdko
 # Use C++17 like the rest of the project
 set_property(TARGET afdko PROPERTY CXX_STANDARD 17)
 
-# Link against the same libraries as _internal
-# Phase 1: Just link what we need for tx and sfntedit
-# tx is in shared, sfntedit is separate
+# Link against all C++ tool libraries (same as _internal)
 target_link_libraries(afdko PRIVATE
+    detype1
+    type1
+    addfeatures
+    spot
     sfntedit
+    sfntdiff
+    mergefonts
+    rotatefont
     shared
     antlr4_static
     ${CHOSEN_LIBXML2_LIBRARY}
 )
+
+# Link against Python for embedding (fallback to Python dispatcher)
+# Find Python with Development component (not just Development.Module)
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+target_link_libraries(afdko PRIVATE Python::Python)
 
 # Add math library if needed (Linux)
 if (HAVE_M_LIB)
