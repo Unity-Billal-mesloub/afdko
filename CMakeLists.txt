@@ -72,6 +72,10 @@ else()
     set(CHOSEN_LIBXML2_LIBRARY ${LIBXML2_LIBRARY})
 endif()
 
+# Option to build standalone afdko binary
+# Set AFDKO_BUILD_BINARY=OFF to use Python wrapper mode instead
+option(AFDKO_BUILD_BINARY "Build standalone afdko binary" ON)
+
 # sanitizer support
 # work around https://github.com/pypa/setuptools/issues/1928 with environment
 # variable
@@ -121,3 +125,11 @@ add_subdirectory(c/addfeatures)
 target_link_libraries(_internal PRIVATE detype1 type1 addfeatures spot sfntedit sfntdiff mergefonts rotatefont shared antlr4_static)
 
 install(TARGETS _internal LIBRARY DESTINATION afdko)
+
+# Add unified afdko binary if enabled
+if(AFDKO_BUILD_BINARY)
+    message(STATUS "Building standalone afdko binary (default mode)")
+    add_subdirectory(c/afdko)
+else()
+    message(STATUS "Using Python wrapper mode (space-saving mode)")
+endif()
