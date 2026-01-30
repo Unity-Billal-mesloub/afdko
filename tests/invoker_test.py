@@ -29,25 +29,18 @@ class TestHelpSystem:
         result = subprocess.run(['afdko', arg], capture_output=True, text=True)
         assert result.returncode == 0
         assert 'Usage: afdko <command>' in result.stdout
-        assert 'C++ Commands' in result.stdout
-        assert 'Python Commands' in result.stdout
+        assert 'Primary Commands:' in result.stdout
         assert "Run 'afdko <command> -h' for command-specific help." in result.stdout
 
-    def test_help_lists_cpp_commands(self):
-        """Help output includes C++ commands."""
+    def test_help_lists_primary_tools(self):
+        """Help output includes primary tools (C++ and Python)."""
         result = subprocess.run(['afdko', '--help'], capture_output=True, text=True)
         assert result.returncode == 0
-        # Check for some key C++ commands
+        # Check for some key primary commands (mix of C++ and Python)
         assert 'tx' in result.stdout
         assert 'sfntedit' in result.stdout
         assert 'spot' in result.stdout
         assert 'addfeatures' in result.stdout
-
-    def test_help_lists_python_commands(self):
-        """Help output includes Python commands."""
-        result = subprocess.run(['afdko', '--help'], capture_output=True, text=True)
-        assert result.returncode == 0
-        # Check for some key Python commands
         assert 'makeotf' in result.stdout
         assert 'otfautohint' in result.stdout
         assert 'buildcff2vf' in result.stdout
