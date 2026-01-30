@@ -19,7 +19,7 @@ endif()
 
 set_property(TARGET addfeatures PROPERTY CXX_STANDARD 17)
 
-target_include_directories(addfeatures PUBLIC AFTER include ../shared/include ../shared/resource)
+target_include_directories(addfeatures PUBLIC AFTER include ../shared/include ../shared/resource ${CMAKE_BINARY_DIR}/c/shared)
 
 set_property(TARGET addfeatures APPEND PROPERTY
              COMPILE_DEFINITIONS MAKEOTFLIB_EXPORTS=1)

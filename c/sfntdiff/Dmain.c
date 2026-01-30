@@ -14,8 +14,8 @@
 #include "sfile.h"
 #include "smem.h"
 #include "slogger.h"
+#include "version.h"  // For FDK_VERSION
 
-extern char *FDK_VERSION;
 
 static const char *progname = "sfntdiff";
 

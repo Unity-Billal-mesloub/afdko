@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 
+#include "version.h"
 #include "varsupport.h"
 
 
@@ -5820,8 +5821,6 @@ static void addArgs(txCtx h, const char *filename) {
         }
     }
 }
-
-extern "C" char *FDK_VERSION;
 
 /* Print library version numbers. */
 static void printVersion(txCtx h) {

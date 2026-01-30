@@ -13,3 +13,5 @@
 ##### • [FDK Build Notes](./FDK_Build_Notes.md)
 ##### • [MakeOTFEXE Feature File Parser Notes](./Feature_Parser_Notes.md)
 ##### • [Support of CFF2 in AFDKO](./CFF2_Support.md)
+##### • [C/C++ Architectural Changes (v5.0)](./C_CPP_Changes.md)
+##### • [Deprecation System Implementation (v5.0)](./Deprecation_System.md)

@@ -14,6 +14,7 @@ set_property(TARGET afdko PROPERTY CXX_STANDARD 17)
 
 # Link against all C++ tool libraries (same as _internal)
 target_link_libraries(afdko PRIVATE
+    afdko_version
     detype1
     type1
     addfeatures
@@ -37,10 +38,11 @@ if (HAVE_M_LIB)
     target_link_libraries(afdko PRIVATE m)
 endif()
 
-# Include directories from shared
+# Include directories from shared and generated files
 target_include_directories(afdko PRIVATE
     ../shared/include
     ../spot/sfnt_includes
+    ${CMAKE_BINARY_DIR}/c/shared  # For generated version.h
 )
 
 # Ensure libxml2 is built first if needed

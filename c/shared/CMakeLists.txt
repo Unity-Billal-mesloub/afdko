@@ -123,7 +123,7 @@ add_library(shared OBJECT
 
 set_property(TARGET shared PROPERTY CXX_STANDARD 17)
 
-target_include_directories(shared PRIVATE include resource)
+target_include_directories(shared PRIVATE include resource ${CMAKE_BINARY_DIR}/c/shared)
 
 if(NOT ${CMAKE_GENERATOR} MATCHES "Xcode.*")
   set_property(SOURCE absfont/absfont.cpp PROPERTY

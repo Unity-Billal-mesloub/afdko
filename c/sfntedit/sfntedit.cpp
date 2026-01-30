@@ -20,8 +20,8 @@
 #include <map>
 
 #include "slogger.h"
+#include "version.h"  // For FDK_VERSION
 
-extern "C" char *FDK_VERSION;
 
 namespace fs = std::filesystem;
 

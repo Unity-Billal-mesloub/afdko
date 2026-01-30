@@ -36,8 +36,16 @@ test_dir = os.path.dirname(os.path.realpath(__file__))
 afdko_dir = os.path.join(test_dir, "..")
 os.chdir(afdko_dir)
 
+# Tests use the unified 'afdko' invoker by default for the primary test path.
+# This reflects real-world usage where users run 'afdko makeotf ...' commands.
+# A small backwards compatibility test at the end verifies wrappers still work.
 TOOL = 'makeotf'
 CMD = ['-t', TOOL]
+
+
+def _tool_cmd(*args):
+    """Helper to construct command using unified invoker."""
+    return ['afdko', TOOL] + list(args)
 
 T1PFA_NAME = 't1pfa.pfa'
 UFO2_NAME = 'ufo2.ufo'
@@ -88,7 +96,7 @@ def test_exit_no_option():
     if allow_skip_console:
         pytest.xfail("May not work if console_script wrapper is missing")
     with pytest.raises(subprocess.CalledProcessError) as err:
-        subprocess.check_call([TOOL])
+        subprocess.check_call(_tool_cmd())
     assert err.value.returncode == 2
 
 
@@ -96,14 +104,14 @@ def test_exit_no_option():
 def test_exit_known_option(arg):
     if allow_skip_console:
         pytest.xfail("May not work if console_script wrapper is missing")
-    assert subprocess.call([TOOL, arg]) == 0
+    assert subprocess.call(_tool_cmd(arg)) == 0
 
 
 @pytest.mark.parametrize('arg', ['-j', '--bogus'])
 def test_exit_unknown_option(arg):
     if allow_skip_console:
         pytest.xfail("May not work if console_script wrapper is missing")
-    assert subprocess.call([TOOL, arg]) == 2
+    assert subprocess.call(_tool_cmd(arg)) == 2
 
 
 @pytest.mark.parametrize('arg, input_filename, ttx_filename', [
@@ -742,5 +750,39 @@ def test_missing_ufo_libplist_bug1306(file, msg, ret_code):
             msg = expected_msg.read()
     assert msg in output
 
-    assert subprocess.call([TOOL, '-amnd', '-f', input_path,
-                            '-o', out_font_path]) == ret_code
+    assert subprocess.call(_tool_cmd('-amnd', '-f', input_path,
+                            '-o', out_font_path)) == ret_code
+
+
+# ---------------------------------
+# Backwards Compatibility Tests
+# ---------------------------------
+# Minimal tests to verify wrapper scripts still work.
+# Main tests above use the invoker (the norm).
+
+class TestWrapperBackwardsCompatibility:
+    """Verify that the makeotf wrapper script still works for backwards compatibility."""
+
+    @pytest.mark.parametrize('arg', ['-h', '-v'])
+    def test_wrapper_help(self, arg):
+        """Wrapper script handles basic options."""
+        if allow_skip_console:
+            pytest.xfail("May not work if console_script wrapper is missing")
+        assert subprocess.call([TOOL, arg]) == 0
+
+    def test_wrapper_runs_same_code(self):
+        """Wrapper and invoker produce identical output."""
+        if allow_skip_console:
+            pytest.xfail("May not work if console_script wrapper is missing")
+        
+        # Run via invoker
+        inv_result = subprocess.run(_tool_cmd('-h'),
+                                    capture_output=True, text=True)
+        
+        # Run via wrapper
+        wrap_result = subprocess.run([TOOL, '-h'],
+                                     capture_output=True, text=True)
+        
+        # Should produce identical output
+        assert inv_result.returncode == wrap_result.returncode
+        assert inv_result.stdout == wrap_result.stdout
