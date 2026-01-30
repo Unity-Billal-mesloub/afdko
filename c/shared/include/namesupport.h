@@ -196,7 +196,7 @@ class nam_name {
     int Fill();
     std::vector<NameRecord*> allMatches(uint16_t platformId, uint16_t platspecId,
                                         uint16_t languageId, uint16_t nameId,
-                                        bool ignoreFromTable=false) {
+                                        bool ignoreFromTable = false) {
         std::vector<NameRecord*> nrv;
         auto i = lowerBound(platformId, platspecId, languageId, nameId);
         auto e = upperBound(platformId, platspecId, languageId, nameId);
@@ -208,7 +208,7 @@ class nam_name {
     }
     std::string getName(uint16_t platformId, uint16_t platspecId,
                         uint16_t languageId, uint16_t nameId,
-                        bool ignoreFromTable=false) {
+                        bool ignoreFromTable = false) {
         auto i = firstMatch(platformId, platspecId, languageId, nameId,
                             ignoreFromTable);
         if (i == entries.end())
@@ -216,15 +216,15 @@ class nam_name {
         return i->second.content;
     }
     bool noName(uint16_t platformId, uint16_t platspecId, uint16_t languageId,
-                uint16_t nameId, bool ignoreFromTable=false) {
+                uint16_t nameId, bool ignoreFromTable = false) {
         return firstMatch(platformId, platspecId, languageId,
                           nameId, ignoreFromTable) == entries.end();
     }
-    bool noWinDfltName(uint16_t nameId, bool ignoreFromTable=false) {
+    bool noWinDfltName(uint16_t nameId, bool ignoreFromTable = false) {
         return noName(NAME_WIN_PLATFORM, NAME_WIN_UGL, NAME_WIN_ENGLISH, nameId,
                       ignoreFromTable);
     }
-    bool noMacDfltName(uint16_t nameId, bool ignoreFromTable=false) {
+    bool noMacDfltName(uint16_t nameId, bool ignoreFromTable = false) {
         return noName(NAME_MAC_PLATFORM, NAME_MAC_ROMAN, NAME_MAC_ENGLISH, nameId,
                       ignoreFromTable);
     }
@@ -273,7 +273,7 @@ class nam_name {
     }
     bool nrMatch(NameRecord &nr, uint16_t platformId, uint16_t platspecId,
                  uint16_t languageId, uint16_t nameId,
-                 bool ignoreFromTable=false) {
+                 bool ignoreFromTable = false) {
         return (platformId == MATCH_ANY || platformId == nr.platformId) &&
                (platspecId == MATCH_ANY || platspecId == nr.platspecId) &&
                (languageId == MATCH_ANY || languageId == nr.languageId) &&
@@ -283,7 +283,7 @@ class nam_name {
 
     EntryMap::iterator firstMatch(uint16_t platformId, uint16_t platspecId,
                                   uint16_t languageId, uint16_t nameId,
-                                  bool ignoreFromTable=false) {
+                                  bool ignoreFromTable = false) {
         auto i = lowerBound(platformId, platspecId, languageId, nameId);
         auto e = upperBound(platformId, platspecId, languageId, nameId);
         for (; i != e; i++)

@@ -4,4 +4,4 @@ add_library(sfntedit OBJECT
 
 set_property(TARGET sfntedit PROPERTY CXX_STANDARD 17)
 
-target_include_directories(sfntedit PRIVATE ../spot/sfnt_includes ../shared/include)
+target_include_directories(sfntedit PRIVATE ../spot/sfnt_includes ../shared/include ${CMAKE_BINARY_DIR}/c/shared)

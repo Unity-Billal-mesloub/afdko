@@ -17,8 +17,16 @@ from test_utils import (
 from runner import main as runner
 from differ import main as differ, SPLIT_MARKER
 
+# Tests use the unified 'afdko' invoker by default for the primary test path.
+# This reflects real-world usage where users run 'afdko tx ...' commands.
+# A small backwards compatibility test at the end verifies wrappers still work.
 TOOL = 'tx'
 CMD = ['-t', TOOL]
+
+
+def _tool_cmd(*args):
+    """Helper to construct command using unified invoker."""
+    return ['afdko', TOOL] + list(args)
 
 
 def _get_extension(in_format):
@@ -65,12 +73,12 @@ PFA_SKIP = [
 
 @pytest.mark.parametrize('arg', ['-h', '-v', '-u'])
 def test_exit_known_option(arg):
-    assert subprocess.call([TOOL, arg]) == 0
+    assert subprocess.call(_tool_cmd(arg)) == 0
 
 
 @pytest.mark.parametrize('arg', ['-bar', '-foo'])
 def test_exit_unknown_option(arg):
-    assert subprocess.call([TOOL, arg]) == 1
+    assert subprocess.call(_tool_cmd(arg)) == 1
 
 
 @pytest.mark.parametrize('pth', [
@@ -79,7 +87,7 @@ def test_exit_unknown_option(arg):
     [get_input_path('type1.pfa'), 'a', 'b'],  # too many file args
 ])
 def test_exit_invalid_path_or_font(pth):
-    assert subprocess.call([TOOL] + pth) == 1
+    assert subprocess.call(_tool_cmd(*pth)) == 1
 
 
 # -------------
@@ -97,7 +105,7 @@ def test_exit_invalid_path_or_font(pth):
 ])
 def test_option_error_type1_input(args):
     font_path = get_input_path('type1.pfa')
-    assert subprocess.call([TOOL] + args + [font_path]) == 1
+    assert subprocess.call(_tool_cmd(*args, font_path)) == 1
 
 
 @pytest.mark.parametrize('arg', ['-e', '-q', '+q', '-w', '+w', '-lf', '-cr',
@@ -105,7 +113,7 @@ def test_option_error_type1_input(args):
 def test_option_error_type1_clash(arg):
     # options -pfb or -LWFN may not be used with other options
     pfb = '-pfb' if arg != '-pfb' else '-LWFN'
-    assert subprocess.call([TOOL, '-t1', pfb, arg]) == 1
+    assert subprocess.call(_tool_cmd('-t1', pfb, arg)) == 1
 
 
 @pytest.mark.parametrize('args', [
@@ -125,7 +133,7 @@ def test_option_error_type1_clash(arg):
     ['-dump', '-Z'], ['-dump', '+Z'],
 ])
 def test_option_error_wrong_mode(args):
-    assert subprocess.call([TOOL] + args) == 1
+    assert subprocess.call(_tool_cmd(*args)) == 1
 
 
 @pytest.mark.parametrize('arg', [
@@ -151,19 +159,19 @@ def test_option_error_bad_arg(args):
 @pytest.mark.parametrize('arg2', ['-sd', '-sr', '-dd'])
 @pytest.mark.parametrize('arg1', ['-a', '-f', '-A'])
 def test_option_error_no_args_left2(arg1, arg2):
-    assert subprocess.call([TOOL, '-t1', arg1, arg2]) == 1
+    assert subprocess.call(_tool_cmd('-t1', arg1, arg2)) == 1
 
 
 @pytest.mark.parametrize('arg2', ['-sd', '-sr', '-dd'])
 @pytest.mark.parametrize('arg1', ['-a', '-f'])
 def test_option_error_empty_list(arg1, arg2):
     empty_dir = get_temp_dir_path()
-    assert subprocess.call([TOOL, '-t1', arg1, arg2, empty_dir]) == 1
+    assert subprocess.call(_tool_cmd('-t1', arg1, arg2, empty_dir)) == 1
 
 
 @pytest.mark.parametrize('arg', ['-bc', '-z', '-cmp', '-sha1'])
 def test_gone_options_bc(arg):
-    assert subprocess.call([TOOL, arg]) == 1
+    assert subprocess.call(_tool_cmd(arg)) == 1
 
 
 @pytest.mark.parametrize('mode, msg', [
@@ -205,7 +213,7 @@ def test_script_file(dcf_dump_level):
 def test_nested_script():
     # nested scripts not allowed
     temp_path = get_temp_file_path()
-    assert subprocess.call([TOOL, '-s', 'foobar', '-s', temp_path]) == 1
+    assert subprocess.call(_tool_cmd('-s', 'foobar', '-s', temp_path)) == 1
 
 
 @pytest.mark.parametrize('layer_name', ['', 'None', 'background', 'foobar'])
@@ -229,7 +237,7 @@ def test_a_options(arg, filename):
     input_path = get_input_path('ufo3.ufo')
     output_path = os.path.join(os.getcwd(), filename)
     assert os.path.exists(output_path) is False
-    subprocess.call([TOOL, '-t1', arg, input_path])
+    subprocess.call(_tool_cmd('-t1', arg, input_path))
     assert os.path.exists(output_path) is True
     os.remove(output_path)
 
@@ -238,7 +246,7 @@ def test_o_option():
     input_path = get_input_path('ufo3.ufo')
     expected_path = get_expected_path('ufo3.pfa')
     output_path = get_temp_file_path()
-    subprocess.call([TOOL, '-t1', '-o', output_path, input_path])
+    subprocess.call(_tool_cmd('-t1', '-o', output_path, input_path))
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
 
 
@@ -266,14 +274,14 @@ def test_stdin():
 def test_m_option_success(arg):
     # mem_manage() is called 16 times with the command 'tx -m 0 type1.pfa'
     input_path = get_input_path('type1.pfa')
-    assert subprocess.call([TOOL, '-m', arg, input_path]) == 0
+    assert subprocess.call(_tool_cmd('-m', arg, input_path)) == 0
 
 
 # Disabled because of https://github.com/adobe-type-tools/afdko/issues/933
 # @pytest.mark.parametrize('arg', range(1, 16))
 # def test_m_option_fail(arg):
 #     input_path = get_input_path('type1.pfa')
-#     assert subprocess.call([TOOL, '-m', f'-{arg}', input_path]) != 0
+#     assert subprocess.call(_tool_cmd('-m', f'-{arg}', input_path)) != 0
 
 
 @pytest.mark.parametrize('arg, exp_filename', [(None, 'not_removed'),
@@ -1108,7 +1116,7 @@ def test_cffread_bug1343():
     ('ufo', 'cidfont.subset', 'cidfont_subset.ufo', 'testCID.ufo'),
     ('t1', 'testCID.ufo', 'cidfont_subset.ufo', 'cidfont.subset'),
     (('ufo', 't1'), 'cidfont.subset', 'cidfont_subset.ufo', 'cidfont.subset'),
-    (('t1', 'ufo'), 'testCID.ufo', 'cidfont_subset.ufo', 'testCID.ufo'),
+    (('t1', 'ufo'), 'testCID.ufo', 'cidfont_subset.ufo', 'testCID-roundtrip.ufo'),
     (('t1', 'ufo'), 'groups-100-fdselect.ufo', 'groups-100-fdselect.ufo',
      'groups-100-fdselect.ufo'),
     (('t1', 'ufo'), 'testCID-noFDSelect.ufo', 'testCID-noFDSelect.ufo',
@@ -1181,7 +1189,7 @@ def test_lib_removes_outlines_bug1366():
     input_path = get_input_path("bug1366.ufo")
     expected_path = get_expected_path("bug1366.pfb")
     output_path = get_temp_file_path()
-    subprocess.call([TOOL, '-t1', '-o', output_path, input_path])
+    subprocess.call(_tool_cmd('-t1', '-o', output_path, input_path))
     expected_path = generate_ps_dump(expected_path)
     output_path = generate_ps_dump(output_path)
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
@@ -1335,7 +1343,7 @@ def test_missing_ufo_libplist_bug1306(file, msg, ret_code):
             msg = expected_msg.read()
     assert msg in output
 
-    assert subprocess.call([TOOL, '-t1', '-f', input_path]) == ret_code
+    assert subprocess.call(_tool_cmd('-t1', '-f', input_path)) == ret_code
 
 
 glyphorder_warn = (b'public.glyphOrder key is empty'
@@ -1572,7 +1580,7 @@ def test_fontmatrix_unitsperem():
     input_path = get_input_path("fontmatrix-unitsperem.ufo")
     expected_path = get_expected_path("fontmatrix-unitsperem.pfa")
     output_path = get_temp_file_path()
-    subprocess.call([TOOL, '-t1', '-o', output_path, input_path])
+    subprocess.call(_tool_cmd('-t1', '-o', output_path, input_path))
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
 
 
@@ -1640,8 +1648,8 @@ def test_ufo_decid_fdarray_memleak():
     input_path = get_input_path("cidkeyed-with-multiple-fdicts.ufo")
     expected_path = get_expected_path("cidkeyed-with-multiple-fdicts.pfa")
     output_path = get_temp_file_path()
-    retCode = subprocess.call([TOOL, '-t1', '-decid', '-fd', '1', '-o',
-                               output_path, input_path])
+    retCode = subprocess.call(_tool_cmd('-t1', '-decid', '-fd', '1', '-o',
+                               output_path, input_path))
     expected_path = generate_ps_dump(expected_path)
     output_path = generate_ps_dump(output_path)
     assert (retCode == 0)
@@ -1658,7 +1666,7 @@ def test_bug1641_wrong_glyphorder():
     input_path = get_input_path("namekeyed-with-alt-layer.ufo")
     expected_path = get_expected_path("namekeyed-with-alt-layer.pfb")
     output_path = get_temp_file_path()
-    subprocess.call([TOOL, '-t1', '-o', output_path, input_path])
+    subprocess.call(_tool_cmd('-t1', '-o', output_path, input_path))
     expected_path = generate_ps_dump(expected_path)
     output_path = generate_ps_dump(output_path)
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
@@ -1691,7 +1699,38 @@ def test_parsing_attrs_bug1673():
     input_path = get_input_path("ufo-advance-height-weight.ufo")
     expected_path = get_expected_path("ufo-advance-height-weight.pfa")
     output_path = get_temp_file_path()
-    subprocess.call([TOOL, '-t1', '-o', output_path, input_path])
+    subprocess.call(_tool_cmd('-t1', '-o', output_path, input_path))
     expected_path = generate_ps_dump(expected_path)
     output_path = generate_ps_dump(output_path)
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
+
+
+# ---------------------------------
+# Backwards Compatibility Tests
+# ---------------------------------
+# Minimal tests to verify wrapper scripts still work.
+# Main tests above use the invoker (the norm).
+
+class TestWrapperBackwardsCompatibility:
+    """Verify that the tx wrapper script still works for backwards compatibility."""
+
+    @pytest.mark.parametrize('arg', ['-h', '-v'])
+    def test_wrapper_help(self, arg):
+        """Wrapper script handles basic options."""
+        assert subprocess.call([TOOL, arg]) == 0
+
+    def test_wrapper_runs_same_code(self):
+        """Wrapper and invoker produce identical output."""
+        input_path = get_input_path('type1.pfa')
+        
+        # Run via invoker
+        inv_result = subprocess.run(_tool_cmd('-dump', input_path),
+                                    capture_output=True, text=True)
+        
+        # Run via wrapper
+        wrap_result = subprocess.run([TOOL, '-dump', input_path],
+                                     capture_output=True, text=True)
+        
+        # Should produce identical output
+        assert inv_result.returncode == wrap_result.returncode
+        assert inv_result.stdout == wrap_result.stdout

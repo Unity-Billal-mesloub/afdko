@@ -65,11 +65,11 @@ cd <path to font directory>
 ```
 and then type the `makeotf` command, with the options needed. For example:
 ```bash
-makeotf –f myfont.pfa –ff myfeatures –b –r
+afdko makeotf –f myfont.pfa –ff myfeatures –b –r
 ```
 or
 ```bash
-makeotf –fp myproject.fpr
+afdko makeotf –fp myproject.fpr
 ```
 
 ## **MakeOTF options**

@@ -10,19 +10,19 @@ Some examples:
 
 Convert an existing CID-keyed OTF to CID-keyed UFO
 
-`tx -ufo -o cid-keyed.ufo cid-keyed.otf`
+`afdko tx -ufo -o cid-keyed.ufo cid-keyed.otf`
 
 Subset a CID-keyed UFO using CID ranges with the `-g` flag
 
-`tx -g /0,/959-/978,/59120-/59130 -ufo -o cid-keyed-subset.ufo cid-keyed.ufo`
+`afdko tx -g /0,/959-/978,/59120-/59130 -ufo -o cid-keyed-subset.ufo cid-keyed.ufo`
 
 Create a name-keyed source using `-decid`
 
-`tx -t1 -o name-keyed.pfa -decid -fd 1 cid-keyed.ufo`
+`afdko tx -t1 -o name-keyed.pfa -decid -fd 1 cid-keyed.ufo`
 
 Merge multiple CID-keyed UFOs into a single UFO
 
-`mergefonts merged-cid-keyed.ufo part1.map part1.ufo part2.map part2.ufo part3.map part3.ufo`
+`afdko mergefonts merged-cid-keyed.ufo part1.map part1.ufo part2.map part2.ufo part3.map part3.ufo`
 
 
 ## **Requirements**
@@ -52,18 +52,18 @@ Some typical ROSes are
 * Adobe-KR-9
 
 All except Adobe-Identity-0 have a fixed CID order that must be followed, but
-the glyphs in the UFO can be named anything that is legal in the UFO format. 
-The UFO glyphOrder may also be any order you choose. If you run `tx` alone you 
-will see the order as saved in the UFO, but when converting with `tx -t1` or `tx -cff`
-or building an OTF with `makeotf` the glyphs will be rearranged into CID order.
+the glyphs in the UFO can be named anything that is legal in the UFO format.
+The UFO glyphOrder may also be any order you choose. If you run `afdko tx` alone you
+will see the order as saved in the UFO, but when converting with `afdko tx -t1` or `afdko tx -cff`
+or building an OTF with `afdko makeotf` the glyphs will be rearranged into CID order.
 
 ### com.adobe.type.postscriptCIDMap
 
-The glyph name to CID mapping must be a dict with the UFO glyph names as keys and 
-their corresponding CID numbers as integer values. When converting an existing CID-keyed 
-source (OTF, CFF, Type1) to UFO with a command like `tx -ufo -o source.ufo source.otf` 
-the glyph names will default to `cidXXXXX` because no names can be 
-stored in those source formats. If you change the names in the UFO be sure to update 
+The glyph name to CID mapping must be a dict with the UFO glyph names as keys and
+their corresponding CID numbers as integer values. When converting an existing CID-keyed
+source (OTF, CFF, Type1) to UFO with a command like `afdko tx -ufo -o source.ufo source.otf`
+the glyph names will default to `cidXXXXX` because no names can be
+stored in those source formats. If you change the names in the UFO be sure to update
 the CID mapping and groups.plist to use the new names.
 
 

@@ -235,13 +235,13 @@ void setVendId_str(hotCtx g, std::string &vend) {
 
 /* Try to set vendor id by matching against copyright strings in the font */
 static void setVendId(hotCtx g) {
-    std::array<std::pair<std::string,std::string>, 1> vendors {{{ "Adobe", "ADBE" }}};
+    std::array<std::pair<std::string, std::string>, 1> vendors {{{ "Adobe", "ADBE" }}};
 
     if (!g->font.vendId.empty())
         return; /*Must have been set by feature file*/
 
     /* Match vendor */
-    for (auto &i: vendors) {
+    for (auto &i : vendors) {
         if (g->font.Notice.find(i.first) != std::string::npos) {
             g->font.vendId = i.second;
             return;

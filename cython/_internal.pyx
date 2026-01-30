@@ -5,6 +5,10 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport strcpy, strcmp, strlen
 
 cdef extern char *FDK_VERSION
+cdef extern void init_fdk_version()
+
+# Initialize FDK_VERSION before accessing it
+init_fdk_version()
 
 try:
     from afdko.fdkutils import fdk_version

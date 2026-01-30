@@ -128,6 +128,6 @@ add_library(spot OBJECT
     WDTH.h
 )
 
-target_include_directories(spot PRIVATE sfnt_includes ../shared/include . ../shared/resource)
+target_include_directories(spot PRIVATE sfnt_includes ../shared/include . ../shared/resource ${CMAKE_BINARY_DIR}/c/shared)
 
 set_property(TARGET spot APPEND PROPERTY COMPILE_DEFINITIONS EXECUTABLE=1)

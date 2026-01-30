@@ -72,6 +72,54 @@ else()
     set(CHOSEN_LIBXML2_LIBRARY ${LIBXML2_LIBRARY})
 endif()
 
+# ============================================================================
+# Version Generation
+# ============================================================================
+# Get version from scikit-build-core (passed via SKBUILD_PROJECT_VERSION)
+# or fallback to running Python to get it from setuptools_scm
+
+if(DEFINED SKBUILD_PROJECT_VERSION)
+    set(AFDKO_VERSION "${SKBUILD_PROJECT_VERSION}")
+    message(STATUS "Version from scikit-build-core: ${AFDKO_VERSION}")
+else()
+    # Fallback: run Python to get version from setuptools_scm
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -c "from setuptools_scm import get_version; print(get_version(), end='')"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE AFDKO_VERSION
+        RESULT_VARIABLE VERSION_RESULT
+        ERROR_QUIET
+    )
+    if(VERSION_RESULT EQUAL 0)
+        message(STATUS "Version from setuptools_scm: ${AFDKO_VERSION}")
+    else()
+        set(AFDKO_VERSION "unknown")
+        message(WARNING "Could not determine version, using 'unknown'")
+    endif()
+endif()
+
+# Generate version header and source files
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/c/shared/version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.h
+    @ONLY
+)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/c/shared/version.cpp.in
+    ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.cpp
+    @ONLY
+)
+
+# Create version library that all tools can link against
+add_library(afdko_version STATIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.cpp)
+target_include_directories(afdko_version PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared)
+set_target_properties(afdko_version PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+# Option to build standalone afdko binary
+# Set AFDKO_BUILD_BINARY=OFF to use Python wrapper mode instead
+option(AFDKO_BUILD_BINARY "Build standalone afdko binary" ON)
+
 # sanitizer support
 # work around https://github.com/pypa/setuptools/issues/1928 with environment
 # variable
@@ -118,6 +166,14 @@ add_subdirectory(c/spot)
 add_subdirectory(c/type1)
 add_subdirectory(c/addfeatures)
 
-target_link_libraries(_internal PRIVATE detype1 type1 addfeatures spot sfntedit sfntdiff mergefonts rotatefont shared antlr4_static)
+target_link_libraries(_internal PRIVATE afdko_version detype1 type1 addfeatures spot sfntedit sfntdiff mergefonts rotatefont shared antlr4_static)
 
 install(TARGETS _internal LIBRARY DESTINATION afdko)
+
+# Add unified afdko binary if enabled
+if(AFDKO_BUILD_BINARY)
+    message(STATUS "Building standalone afdko binary (default mode)")
+    add_subdirectory(c/afdko)
+else()
+    message(STATUS "Using Python wrapper mode (space-saving mode)")
+endif()

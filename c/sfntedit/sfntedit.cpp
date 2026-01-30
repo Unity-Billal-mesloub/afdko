@@ -20,8 +20,15 @@
 #include <map>
 
 #include "slogger.h"
+#include "version.h"  // For FDK_VERSION
 
-extern "C" char *FDK_VERSION;
+#ifdef _WIN32
+#include <process.h>
+#define getpid _getpid
+#else
+#include <unistd.h>
+#endif
+
 
 namespace fs = std::filesystem;
 
@@ -152,7 +159,7 @@ class SfntEdit {
     void reset();
 
  private:
-    const fs::path tmpname {"sfntedit.tmp"};
+    const fs::path tmpname {std::string("sfntedit.") + std::to_string(getpid()) + ".tmp"};
     fs::path sourcepath;
     fs::path scriptfilepath;
     fs::path srcfilepath, dstfilepath;
@@ -1110,6 +1117,7 @@ int SfntEdit::run(int argc, char *argv[]) {
 }
 
 extern "C" int main__sfntedit(int argc, char *argv[]) {
+    init_fdk_version();
     SfntEdit se;
 
     return se.run(argc, argv);

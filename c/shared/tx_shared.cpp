@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 
+#include "version.h"
 #include "varsupport.h"
 
 
@@ -5821,8 +5822,6 @@ static void addArgs(txCtx h, const char *filename) {
     }
 }
 
-extern "C" char *FDK_VERSION;
-
 /* Print library version numbers. */
 static void printVersion(txCtx h) {
     printf("%s version: %s\n", TX_PROGNAME(h), FDK_VERSION);
@@ -7215,6 +7214,7 @@ int run_tx(txCtx h, int argc, char *argv[]) {
 }
 
 extern "C" int CTL_CDECL main__tx(int argc, char *argv[]) {
+    init_fdk_version();
     struct txCtx_ h;
     memset(&h, 0, sizeof(struct txCtx_));
 

@@ -14,8 +14,8 @@
 #include "sfile.h"
 #include "smem.h"
 #include "slogger.h"
+#include "version.h"  // For FDK_VERSION
 
-extern char *FDK_VERSION;
 
 static const char *progname = "sfntdiff";
 
@@ -82,6 +82,7 @@ static void showHelp(void) {
 
 /* Main program */
 int main__sfntdiff(int argc, char *argv[]) {
+    init_fdk_version();
     static opt_Option opt[] = {
             {"-u", opt_Call, showUsage},
             {"-h", opt_Call, showHelp},
