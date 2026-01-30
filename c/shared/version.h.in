@@ -12,10 +12,10 @@
 extern "C" {
 #endif
 
-/* Mutable version pointer - can be updated by Python extension */
-extern char *FDK_VERSION;
+/* Version string - initialized at compile time */
+extern const char *FDK_VERSION;
 
-/* Initialize FDK_VERSION with the build-time version */
+/* Initialize FDK_VERSION (no-op, kept for API compatibility) */
 void init_fdk_version(void);
 
 #ifdef __cplusplus

@@ -6,27 +6,14 @@
  */
 
 #include "version.h"
-#include <string.h>
-#include <stdlib.h>
 
 /* Build-time version string from setuptools_scm via scikit-build-core */
 static const char build_version[] = "@AFDKO_VERSION@";
 
-/* Mutable version pointer - will be malloc'd at startup */
-char *FDK_VERSION = NULL;
+/* Version pointer - points to compile-time constant */
+const char *FDK_VERSION = build_version;
 
-/* Initialize FDK_VERSION with a malloc'd copy at startup */
-__attribute__((constructor))
-static void auto_init_fdk_version(void) {
-    if (FDK_VERSION == NULL) {
-        FDK_VERSION = (char *)malloc(strlen(build_version) + 1);
-        if (FDK_VERSION != NULL) {
-            strcpy(FDK_VERSION, build_version);
-        }
-    }
-}
-
-/* Manual initialization function for explicit calls */
+/* Manual initialization function - no-op, kept for API compatibility */
 void init_fdk_version(void) {
-    auto_init_fdk_version();
+    /* Version is initialized at compile time, nothing to do */
 }
