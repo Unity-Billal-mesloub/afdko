@@ -152,6 +152,8 @@ static int invoke_python(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
+    init_fdk_version();
+
     // Check if argv[1] is a C++ command (fast path)
     if (argc >= 2) {
         int (*cpp_func)(int, char**) = nullptr;

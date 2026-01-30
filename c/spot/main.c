@@ -382,6 +382,7 @@ static void makeArgs(char *filename) {
 
 /* Main program */
 int main__spot(int argc, char *argv[]) {
+    init_fdk_version();
     int value = 0;
     static double glyphptsize = STDPAGE_GLYPH_PTSIZE;
     static opt_Option opt[] =

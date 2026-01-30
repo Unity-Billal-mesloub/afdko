@@ -82,6 +82,7 @@ static void showHelp(void) {
 
 /* Main program */
 int main__sfntdiff(int argc, char *argv[]) {
+    init_fdk_version();
     static opt_Option opt[] = {
             {"-u", opt_Call, showUsage},
             {"-h", opt_Call, showHelp},

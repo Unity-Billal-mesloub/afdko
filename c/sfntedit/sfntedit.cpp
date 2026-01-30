@@ -1110,6 +1110,7 @@ int SfntEdit::run(int argc, char *argv[]) {
 }
 
 extern "C" int main__sfntedit(int argc, char *argv[]) {
+    init_fdk_version();
     SfntEdit se;
 
     return se.run(argc, argv);

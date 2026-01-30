@@ -7214,6 +7214,7 @@ int run_tx(txCtx h, int argc, char *argv[]) {
 }
 
 extern "C" int CTL_CDECL main__tx(int argc, char *argv[]) {
+    init_fdk_version();
     struct txCtx_ h;
     memset(&h, 0, sizeof(struct txCtx_));
 

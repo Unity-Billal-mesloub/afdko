@@ -505,6 +505,7 @@ static void *cb_manage(ctlMemoryCallbacks *cb, void *old, size_t size) {
 
 /* Main program */
 extern "C" int main__addfeatures(int argc, char *argv[]) {
+    init_fdk_version();
     dnaCtx mainDnaCtx = NULL;
     long value;
 
