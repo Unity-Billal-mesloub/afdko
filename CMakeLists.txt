@@ -114,6 +114,7 @@ configure_file(
 # Create version library that all tools can link against
 add_library(afdko_version STATIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.cpp)
 target_include_directories(afdko_version PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared)
+set_target_properties(afdko_version PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Option to build standalone afdko binary
 # Set AFDKO_BUILD_BINARY=OFF to use Python wrapper mode instead
