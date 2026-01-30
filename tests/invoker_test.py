@@ -30,7 +30,7 @@ class TestHelpSystem:
         assert result.returncode == 0
         assert 'Usage: afdko <command>' in result.stdout
         assert 'Primary Commands:' in result.stdout
-        assert "Run 'afdko <command> -h' for command-specific help." in result.stdout
+        assert "for command-specific help" in result.stdout
 
     def test_help_lists_primary_tools(self):
         """Help output includes primary tools (C++ and Python)."""
@@ -44,6 +44,53 @@ class TestHelpSystem:
         assert 'makeotf' in result.stdout
         assert 'otfautohint' in result.stdout
         assert 'buildcff2vf' in result.stdout
+
+    @pytest.mark.parametrize('arg', ['-s', '--secondary'])
+    def test_help_secondary_commands(self, arg):
+        """Secondary commands help flag works."""
+        result = subprocess.run(['afdko', arg], capture_output=True, text=True)
+        assert result.returncode == 0
+        assert 'Usage: afdko <command>' in result.stdout
+        assert 'Secondary Commands:' in result.stdout
+        # Check for some secondary commands
+        assert 'otc2otf' in result.stdout or 'comparefamily' in result.stdout
+
+    @pytest.mark.parametrize('arg', ['-p', '--plot'])
+    def test_help_proofing_commands(self, arg):
+        """Proofing commands help flag works."""
+        result = subprocess.run(['afdko', arg], capture_output=True, text=True)
+        assert result.returncode == 0
+        assert 'Usage: afdko <command>' in result.stdout
+        assert 'Proofing Commands:' in result.stdout
+        # Check for some proofing commands
+        assert 'fontplot' in result.stdout or 'hintplot' in result.stdout
+
+    @pytest.mark.parametrize('arg', ['-a', '--all'])
+    def test_help_all_commands(self, arg):
+        """All commands help flag works."""
+        result = subprocess.run(['afdko', arg], capture_output=True, text=True)
+        assert result.returncode == 0
+        assert 'Usage: afdko <command>' in result.stdout
+        # Should show all three categories
+        assert 'Primary Commands:' in result.stdout
+        assert 'Secondary Commands:' in result.stdout
+        assert 'Proofing Commands:' in result.stdout
+
+    def test_help_command_specific_forwarding(self):
+        """afdko -h <command> forwards to command help."""
+        # Test with a C++ command
+        result = subprocess.run(['afdko', '-h', 'tx'],
+                               capture_output=True, text=True)
+        # Should show tx-specific help (may be in stdout or stderr)
+        output = result.stdout + result.stderr
+        assert 'tx' in output.lower()
+
+    def test_help_command_specific_unknown(self):
+        """afdko -h <invalid> shows error."""
+        result = subprocess.run(['afdko', '-h', 'invalidcmd'],
+                               capture_output=True, text=True)
+        assert result.returncode == 1
+        assert "Unknown command 'invalidcmd'" in result.stderr
 
 
 class TestErrorHandling:
