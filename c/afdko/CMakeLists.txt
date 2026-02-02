@@ -4,22 +4,10 @@
 # subcommands to their appropriate implementations.
 #
 # Requires Python Development.Embed for embedding Python interpreter.
-# If not available (e.g., manylinux wheel builds), this target is skipped.
+# On Linux wheel builds, set AFDKO_BUILD_BINARY=OFF to skip this.
 
-# Check for Python embedding support before defining any targets
-# We need the actual Python library (libpython) for embedding.
-# In manylinux, only Development.Module is available (headers but no library).
-# CMake caching can give false positives, so check Python_LIBRARY directly.
-find_package(Python COMPONENTS Interpreter Development.Embed QUIET)
-message(STATUS "Python_FOUND: ${Python_FOUND}")
-message(STATUS "Python_Development.Embed_FOUND: ${Python_Development.Embed_FOUND}")
-message(STATUS "Python_LIBRARY: ${Python_LIBRARY}")
-message(STATUS "Python_LIBRARIES: ${Python_LIBRARIES}")
-if(NOT Python_LIBRARY AND NOT Python_LIBRARIES)
-    message(STATUS "Python library not available (no Development.Embed) - skipping afdko binary")
-    return()
-endif()
-message(STATUS "Python embedding available - building afdko binary")
+# Find Python with embedding support
+find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
 
 add_executable(afdko
     afdko_main.cpp
