@@ -3,7 +3,15 @@
 # This builds the unified 'afdko' command dispatcher that routes
 # subcommands to their appropriate implementations.
 #
-# Phase 1: C++ commands only (no Python embedding yet)
+# Requires Python Development.Embed for embedding Python interpreter.
+# If not available (e.g., manylinux wheel builds), this target is skipped.
+
+# Check for Python embedding support before defining any targets
+find_package(Python COMPONENTS Interpreter Development QUIET)
+if(NOT Python_Development.Embed_FOUND)
+    message(STATUS "Python Development.Embed not available - skipping afdko binary")
+    return()
+endif()
 
 add_executable(afdko
     afdko_main.cpp
@@ -28,9 +36,7 @@ target_link_libraries(afdko PRIVATE
     ${CHOSEN_LIBXML2_LIBRARY}
 )
 
-# Link against Python for embedding (fallback to Python dispatcher)
-# Find Python with Development component (not just Development.Module)
-find_package(Python COMPONENTS Interpreter Development REQUIRED)
+# Link against Python for embedding
 target_link_libraries(afdko PRIVATE Python::Python)
 
 # Add math library if needed (Linux)
