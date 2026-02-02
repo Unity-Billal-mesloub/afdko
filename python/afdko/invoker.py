@@ -125,7 +125,13 @@ def print_help(show_category: str = 'primary') -> None:
     print("Usage: afdko <command> [options]")
     print("   or: afdko -h <command>  (get help for specific command)")
     print()
-    print("AFDKO Unified Command Interface")
+    print("AFDKO (Adobe Font Development Kit for OpenType) is Adobe's open source")
+    print("toolkit for building, editing, validating, and proofing OpenType fonts")
+    print("with emphasis on PostScript-lineage CFF and CFF2 output. It includes over")
+    print("25 specialized tools for tasks ranging from compiling fonts with OpenType")
+    print("layout features (makeotf), auto-hinting (otfautohint), and format conversion")
+    print("(tx, otf2ttf), to quality validation (checkoutlinesufo, comparefamily) and")
+    print("generating detailed proofs (spot, charplot).")
     print()
 
     if show_category in ('primary', 'all'):
