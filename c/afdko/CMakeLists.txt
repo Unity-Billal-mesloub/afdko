@@ -7,7 +7,9 @@
 # If not available (e.g., manylinux wheel builds), this target is skipped.
 
 # Check for Python embedding support before defining any targets
-find_package(Python COMPONENTS Interpreter Development QUIET)
+# Must explicitly request Development.Embed (not just Development) to properly
+# detect when only Development.Module is available (e.g., manylinux)
+find_package(Python COMPONENTS Interpreter Development.Embed QUIET)
 if(NOT Python_Development.Embed_FOUND)
     message(STATUS "Python Development.Embed not available - skipping afdko binary")
     return()
