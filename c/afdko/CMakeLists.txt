@@ -7,11 +7,16 @@
 # If not available (e.g., manylinux wheel builds), this target is skipped.
 
 # Check for Python embedding support before defining any targets
-# Must explicitly request Development.Embed (not just Development) to properly
-# detect when only Development.Module is available (e.g., manylinux)
+# The Python::Python target is only created when Development.Embed is available.
+# In manylinux, only Development.Module is available, so Python::Python won't exist.
 find_package(Python COMPONENTS Interpreter Development.Embed QUIET)
-if(NOT Python_Development.Embed_FOUND)
-    message(STATUS "Python Development.Embed not available - skipping afdko binary")
+message(STATUS "Python_FOUND: ${Python_FOUND}")
+message(STATUS "Python_Development.Embed_FOUND: ${Python_Development.Embed_FOUND}")
+message(STATUS "Python_LIBRARY: ${Python_LIBRARY}")
+if(TARGET Python::Python)
+    message(STATUS "Python::Python target exists (will build afdko binary)")
+else()
+    message(STATUS "Python::Python target not available (no Development.Embed) - skipping afdko binary")
     return()
 endif()
 
