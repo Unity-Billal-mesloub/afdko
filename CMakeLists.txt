@@ -117,8 +117,13 @@ target_include_directories(afdko_version PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/c/sh
 set_target_properties(afdko_version PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Option to build standalone afdko binary
-# Set AFDKO_BUILD_BINARY=OFF to use Python wrapper mode instead
-option(AFDKO_BUILD_BINARY "Build standalone afdko binary" ON)
+# Set AFDKO_BUILD_BINARY=OFF environment variable or -DAFDKO_BUILD_BINARY=OFF
+# to use Python wrapper mode instead (e.g., for manylinux wheel builds)
+if(DEFINED ENV{AFDKO_BUILD_BINARY})
+    set(AFDKO_BUILD_BINARY "$ENV{AFDKO_BUILD_BINARY}" CACHE BOOL "Build standalone afdko binary")
+else()
+    option(AFDKO_BUILD_BINARY "Build standalone afdko binary" ON)
+endif()
 
 # sanitizer support
 # work around https://github.com/pypa/setuptools/issues/1928 with environment
