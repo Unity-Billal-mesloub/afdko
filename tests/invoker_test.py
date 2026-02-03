@@ -21,7 +21,7 @@ class TestHelpSystem:
         result = subprocess.run(['afdko'], capture_output=True, text=True)
         assert result.returncode == 1
         assert 'Usage: afdko <command>' in result.stdout
-        assert 'AFDKO Unified Command Interface' in result.stdout
+        assert 'Adobe Font Development Kit for OpenType' in result.stdout
 
     @pytest.mark.parametrize('arg', ['-h', '--help', 'help'])
     def test_help_explicit(self, arg):
