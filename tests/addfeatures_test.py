@@ -161,6 +161,27 @@ def test_glyph_not_in_font_bug492():
     assert (b'syntax error at "a" [') not in output
 
 
+def test_missing_semicolon_error_position():
+    """Test that missing semicolon errors are reported at end of previous line,
+    not at the beginning of the next line."""
+    input_filename = 'font.cff'
+    feat_filename = 'missing_semicolon.fea'
+    otf_path = get_temp_file_path()
+
+    stderr_path = runner(
+        CMD + ['-s', '-e', '-o',
+               'f', f'_{get_input_path(input_filename)}',
+               'ff', f'_{get_input_path(feat_filename)}',
+               'o', f'_{otf_path}'])
+
+    with open(stderr_path, 'rb') as f:
+        output = f.read()
+    # Should report error on line 7 (where semicolon is missing)
+    # not on line 8 (start of next statement)
+    assert (b'line     7') in output
+    assert (b"missing ';' at end of line") in output
+
+
 def test_version_warning_bug610():
     input_filename = 'bug610/font.cff'
     feat_filename = 'bug610/v0005.fea'

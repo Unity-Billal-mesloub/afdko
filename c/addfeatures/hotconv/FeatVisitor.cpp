@@ -226,6 +226,21 @@ void FeatVisitor::FeatErrorListener::syntaxError(antlr4::Recognizer *,
                                                  size_t, size_t,
                                                  const std::string &msg,
                                                  std::exception_ptr) {
+    // Check if this is a "missing ';'" error
+    if (msg.find("missing ';'") != std::string::npos && t != nullptr) {
+        // Get the previous token to report the error at the end of the previous line
+        antlr4::Token *prevToken = v.tokens->LT(-1);
+        if (prevToken != nullptr && prevToken->getTokenIndex() < t->getTokenIndex()) {
+            // Report the error at the end of the previous token
+            v.TOK(prevToken);
+
+            // Construct a better error message
+            std::string betterMsg = "missing ';' at end of line";
+            v.fc->g->logger->msg(sERROR, betterMsg.c_str());
+            return;
+        }
+    }
+
     v.TOK(t);
     // Whatever messages the parser can produce are printed as a group
     // before processing ends if there are any errors, so here we just
