@@ -31,10 +31,10 @@ jobs:
       with:
         fetch-depth: 0  # unshallow fetch for setuptools-scm
 
-    - name: Install Python 3.11
+    - name: Install Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     - name: Build wheel (only macosx_universal2)
       if: matrix.os == 'macos-latest'
@@ -42,7 +42,7 @@ jobs:
       with:
         output-dir: dist
       env:
-        CIBW_SKIP: "pp* cp36-* cp37-* cp38-*"
+        CIBW_SKIP: "pp* cp36-* cp37-* cp38-* cp39-*"
         CIBW_ARCHS_MACOS: universal2
         CIBW_ENVIRONMENT_MACOS: "CFLAGS='-arch arm64 -arch x86_64 -I/usr/include/libxml2' CXXFLAGS='-arch arm64 -arch x86_64' LDFLAGS='-arch arm64 -arch x86_64' MACOSX_DEPLOYMENT_TARGET='10.15'"
 
@@ -56,7 +56,7 @@ jobs:
         CIBW_ARCHS_WINDOWS: AMD64
         CIBW_ARCHS_LINUX: x86_64
         CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
-        CIBW_SKIP: "*musllinux* pp* cp36-* cp37-* cp38-*"
+        CIBW_SKIP: "*musllinux* pp* cp36-* cp37-* cp38-* cp39-*"
         # CIBW_BEFORE_ALL_LINUX: "dnf install uuid-devel"
         CIBW_ENVIRONMENT_MACOS: "CFLAGS='-I/usr/include/libxml2' MACOSX_DEPLOYMENT_TARGET='10.15'"
         CIBW_ENVIRONMENT_LINUX: "FORCE_BUILD_LIBXML2=ON AFDKO_BUILD_BINARY=OFF"
