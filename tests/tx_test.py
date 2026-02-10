@@ -1064,6 +1064,35 @@ def test_overlap_removal():
     output_path = get_temp_file_path()
     args = [TOOL, '-t1', '+V', '-o', output_path, input_path]
     subprocess.call(args)
+
+    # Debug: Show file sizes and last bytes
+    import os
+    exp_size = os.path.getsize(expected_path)
+    out_size = os.path.getsize(output_path)
+    print(f"\n=== DEBUG: File sizes ===")
+    print(f"Expected: {exp_size} bytes")
+    print(f"Actual:   {out_size} bytes")
+    print(f"Difference: {exp_size - out_size} bytes")
+
+    # Show last 100 bytes of each file in hex
+    with open(expected_path, 'rb') as f:
+        f.seek(-min(100, exp_size), 2)
+        exp_tail = f.read()
+    with open(output_path, 'rb') as f:
+        f.seek(-min(100, out_size), 2)
+        out_tail = f.read()
+
+    print(f"\n=== DEBUG: Last 100 bytes of expected (hex) ===")
+    print(exp_tail.hex())
+    print(f"\n=== DEBUG: Last 100 bytes of actual (hex) ===")
+    print(out_tail.hex())
+
+    # Show repr to see exact whitespace
+    print(f"\n=== DEBUG: Last 50 bytes of expected (repr) ===")
+    print(repr(exp_tail[-50:]))
+    print(f"\n=== DEBUG: Last 50 bytes of actual (repr) ===")
+    print(repr(out_tail[-50:]))
+
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
 
 
