@@ -67,19 +67,19 @@ endif()
 
 # Generate version header and source files
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/c/shared/version.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/c/shared/afdko_version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/c/shared/afdko_version.h
     @ONLY
 )
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/c/shared/version.cpp.in
-    ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/c/shared/afdko_version.cpp.in
+    ${CMAKE_CURRENT_BINARY_DIR}/c/shared/afdko_version.cpp
     @ONLY
 )
 
 # Create version library that all tools can link against
-add_library(afdko_version STATIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared/version.cpp)
+add_library(afdko_version STATIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared/afdko_version.cpp)
 target_include_directories(afdko_version PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared)
 set_target_properties(afdko_version PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

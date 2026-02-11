@@ -19,7 +19,7 @@
 #include "setjmp.h"
 #include "map.h"
 #include "sfile.h"
-#include "version.h"  // For FDK_VERSION
+#include "afdko_version.h"  // For FDK_VERSION
 
 jmp_buf spot_mark;
 #define MAX_ARGS 200

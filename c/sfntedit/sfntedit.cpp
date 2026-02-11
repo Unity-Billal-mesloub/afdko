@@ -20,7 +20,7 @@
 #include <map>
 
 #include "slogger.h"
-#include "version.h"  // For FDK_VERSION
+#include "afdko_version.h"  // For FDK_VERSION
 
 #ifdef _WIN32
 #include <process.h>

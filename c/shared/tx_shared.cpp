@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 
-#include "version.h"
+#include "afdko_version.h"
 #include "varsupport.h"
 
 
