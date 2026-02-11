@@ -28,8 +28,8 @@ target_link_libraries(afdko PRIVATE
     mergefonts
     rotatefont
     shared
-    antlr4_static
-    ${CHOSEN_LIBXML2_LIBRARY}
+    afdko::antlr4
+    LibXml2::LibXml2
 )
 
 # Link against Python for embedding
@@ -40,17 +40,10 @@ if (HAVE_M_LIB)
     target_link_libraries(afdko PRIVATE m)
 endif()
 
-# Include directories from shared and generated files
+# Include directories for spot's sfnt_includes (shared provides ../shared/include and version.h)
 target_include_directories(afdko PRIVATE
-    ../shared/include
     ../spot/sfnt_includes
-    ${CMAKE_BINARY_DIR}/c/shared  # For generated version.h
 )
-
-# Ensure libxml2 is built first if needed
-if (${NEED_LIBXML2_DEPEND})
-    add_dependencies(afdko ${LIBXML2_TARGET})
-endif()
 
 # Install to bin directory
 # scikit-build-core will handle placing this in the right location in the wheel

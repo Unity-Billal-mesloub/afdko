@@ -139,7 +139,7 @@ add_subdirectory(c/spot)
 add_subdirectory(c/type1)
 add_subdirectory(c/addfeatures)
 
-target_link_libraries(_internal PRIVATE afdko_version detype1 type1 addfeatures spot sfntedit sfntdiff mergefonts rotatefont shared antlr4_static)
+target_link_libraries(_internal PRIVATE afdko_version detype1 type1 addfeatures spot sfntedit sfntdiff mergefonts rotatefont shared afdko::antlr4)
 
 install(TARGETS _internal LIBRARY DESTINATION afdko)
 

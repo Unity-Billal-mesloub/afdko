@@ -1,6 +1,6 @@
 add_library(type1 OBJECT type1.c)
 
-target_include_directories(type1 PUBLIC AFTER ../shared/include)
+target_link_libraries(type1 PUBLIC shared)
 
 if(WIN32)
     # Could be non-msvc compiler on windows

@@ -5,4 +5,5 @@ add_library(rotatefont OBJECT
     rf_usage.h
 )
 
-target_include_directories(rotatefont PRIVATE ../shared/include ../shared/resource ../shared/include/tx_help)
+target_link_libraries(rotatefont PRIVATE shared)
+target_include_directories(rotatefont PRIVATE ../shared/resource ../shared/include/tx_help)

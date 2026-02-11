@@ -123,7 +123,10 @@ add_library(shared OBJECT
 
 set_property(TARGET shared PROPERTY CXX_STANDARD 17)
 
-target_include_directories(shared PRIVATE include resource ${CMAKE_BINARY_DIR}/c/shared)
+# Export includes to consumers via INTERFACE, resource is private for building shared only
+target_include_directories(shared
+    PRIVATE resource
+    PUBLIC include ${CMAKE_BINARY_DIR}/c/shared)
 target_link_libraries(shared PUBLIC LibXml2::LibXml2)
 
 if(NOT ${CMAKE_GENERATOR} MATCHES "Xcode.*")

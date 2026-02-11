@@ -13,4 +13,5 @@ add_library(sfntdiff OBJECT
     Dsfnt.h
 )
 
-target_include_directories(sfntdiff AFTER PRIVATE ../spot ../spot/sfnt_includes ../shared/include ${CMAKE_BINARY_DIR}/c/shared)
+target_link_libraries(sfntdiff PRIVATE shared)
+target_include_directories(sfntdiff AFTER PRIVATE ../spot ../spot/sfnt_includes)

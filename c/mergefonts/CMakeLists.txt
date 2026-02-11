@@ -5,4 +5,5 @@ add_library(mergefonts OBJECT
     mf_usage.h
 )
 
-target_include_directories(mergefonts PRIVATE ../shared/include ../shared/resource ../shared/include/tx_help)
+target_link_libraries(mergefonts PRIVATE shared)
+target_include_directories(mergefonts PRIVATE ../shared/resource ../shared/include/tx_help)
