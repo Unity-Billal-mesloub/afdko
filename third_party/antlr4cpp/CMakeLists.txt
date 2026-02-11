@@ -16,7 +16,10 @@ else()
       GIT_TAG ${ANTLR4_TAG}
   )
 endif()
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+# Only try system package if explicitly requested by distro packagers
+# Note: ANTLR4 runtime must match the version used to generate parser files
+# Default is to build from source to ensure version compatibility
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24 AND DEFINED ENV{FORCE_SYSTEM_ANTLR4})
   list(APPEND fetch_content_args FIND_PACKAGE_ARGS CONFIG)
 endif()
 FetchContent_Declare(antlr4-runtime
@@ -29,5 +32,19 @@ option(ANTLR_BUILD_SHARED "Override: afdko" OFF)
 option(ANTLR_BUILD_STATIC "Override: afdko" ON)
 
 set(CMAKE_CXX_STANDARD 17)
-FetchContent_MakeAvailable(antlr4-runtime)
-add_library(afdko::antlr4 ALIAS antlr4_static)
+
+# Handle FORCE_SYSTEM_ANTLR4 for CMake < 3.24
+if(CMAKE_VERSION VERSION_LESS 3.24 AND DEFINED ENV{FORCE_SYSTEM_ANTLR4})
+  find_package(antlr4-runtime REQUIRED CONFIG)
+else()
+  # For CMake 3.24+, FIND_PACKAGE_ARGS handles FORCE_SYSTEM_ANTLR4
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24 AND DEFINED ENV{FORCE_SYSTEM_ANTLR4})
+    set(CMAKE_REQUIRE_FIND_PACKAGE_antlr4-runtime ON)
+  endif()
+  FetchContent_MakeAvailable(antlr4-runtime)
+endif()
+
+# Create alias - antlr4_static exists whether from system or built
+if(NOT TARGET afdko::antlr4)
+  add_library(afdko::antlr4 ALIAS antlr4_static)
+endif()
