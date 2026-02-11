@@ -9,13 +9,9 @@ add_library(addfeatures OBJECT
     fcdb.h
 )
 
-target_link_libraries(addfeatures PRIVATE
-                      $<TARGET_OBJECTS:hotconv>
-                      $<TARGET_OBJECTS:pstoken>)
-
-set_property(TARGET addfeatures PROPERTY CXX_STANDARD 17)
-
-target_link_libraries(addfeatures PUBLIC shared)
+target_link_libraries(addfeatures
+    PRIVATE hotconv pstoken afdko_version
+    PUBLIC shared)
 target_include_directories(addfeatures PUBLIC AFTER include ../shared/resource)
 
 set_property(TARGET addfeatures APPEND PROPERTY

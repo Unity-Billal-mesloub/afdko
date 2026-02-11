@@ -13,9 +13,6 @@ add_executable(afdko
     afdko_main.cpp
 )
 
-# Use C++17 like the rest of the project
-set_property(TARGET afdko PROPERTY CXX_STANDARD 17)
-
 # Link against all C++ tool libraries (same as _internal)
 target_link_libraries(afdko PRIVATE
     afdko_version

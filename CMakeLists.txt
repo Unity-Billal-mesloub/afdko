@@ -12,7 +12,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 find_program(CYTHON "cython")
@@ -31,7 +31,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # https://www.antlr.org/download/antlr4-cpp-runtime-4.9.3-source.zip
 # set(ANTLR4_ZIP_REPOSITORY "/path_to_antlr4_archive/a4.zip")
 
-add_compile_definitions(ANTLR4CPP_STATIC)
 set(ANTLR4_WITH_STATIC_CRT OFF)
 # set(ANTLR4_TAG tags/4.13.2)
 # This is a more recent commit than 4.13.2 that addresses a missing

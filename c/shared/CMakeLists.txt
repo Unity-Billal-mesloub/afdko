@@ -121,8 +121,6 @@ add_library(shared OBJECT
     include/varsupport.h
 )
 
-set_property(TARGET shared PROPERTY CXX_STANDARD 17)
-
 # Export includes to consumers via INTERFACE, resource is private for building shared only
 target_include_directories(shared
     PRIVATE resource

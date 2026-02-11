@@ -64,15 +64,15 @@ add_library(hotconv OBJECT
 )
 
 set_property(TARGET hotconv PROPERTY C_STANDARD 99)
-set_property(TARGET hotconv PROPERTY CXX_STANDARD 17)
+
+# ANTLR4CPP_STATIC tells ANTLR4 headers we're using static library
+target_compile_definitions(hotconv PRIVATE ANTLR4CPP_STATIC)
 
 target_include_directories(hotconv BEFORE PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${ANTLR4_INCLUDE_DIRS}>)
-target_include_directories(hotconv AFTER PRIVATE ../include ../../shared/include ../../shared/resource)
+target_include_directories(hotconv AFTER PRIVATE ../include ../../shared/resource)
 # Because hotconv is an object library, all this should do is
 # establish the build dependency
-target_link_libraries(hotconv PUBLIC afdko::antlr4)
-
-target_link_libraries(hotconv PUBLIC LibXml2::LibXml2)
+target_link_libraries(hotconv PUBLIC afdko::antlr4 shared)
 
 if ( CMAKE_COMPILER_IS_GNUCC )
         set_property(TARGET hotconv APPEND PROPERTY
