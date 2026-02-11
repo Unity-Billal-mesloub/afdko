@@ -1,4 +1,4 @@
-add_library(hotconv OBJECT
+add_library(hotconv STATIC
     # generated
     FeatCtx.cpp
     FeatCtx.h

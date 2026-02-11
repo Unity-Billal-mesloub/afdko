@@ -14,15 +14,11 @@ add_executable(afdko
 )
 
 # Link against all C++ tool libraries (same as _internal)
-# Note: hotconv and pstoken are OBJECT libraries used by addfeatures
-# and must be explicitly listed for executables
 target_link_libraries(afdko PRIVATE
     afdko_version
     detype1
     type1
     addfeatures
-    hotconv
-    pstoken
     spot
     sfntedit
     sfntdiff

@@ -1,4 +1,4 @@
-add_library(pstoken OBJECT pstoken.c)
+add_library(pstoken STATIC pstoken.c)
 
 set_property(TARGET pstoken APPEND PROPERTY
              COMPILE_DEFINITIONS PSTOKEN_DEBUG=1 CFF_DEBUG=1 CFF_T13_SUPPORT=0)
