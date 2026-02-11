@@ -10,8 +10,7 @@ add_library(addfeatures OBJECT
 )
 
 target_link_libraries(addfeatures
-    PUBLIC hotconv pstoken shared
-    PRIVATE afdko_version)
+    PUBLIC hotconv pstoken shared afdko_version)
 target_include_directories(addfeatures PUBLIC AFTER include ../shared/resource)
 
 set_property(TARGET addfeatures APPEND PROPERTY
