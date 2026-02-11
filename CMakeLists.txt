@@ -14,6 +14,11 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_CXX_STANDARD 17)
 
+# None of AFDKO's C sources are multithreaded, but we need to add
+# -pthread on Linux to make ANTLR4 happy when statically linked
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 find_program(CYTHON "cython")
 
@@ -139,6 +144,10 @@ add_subdirectory(c/type1)
 add_subdirectory(c/addfeatures)
 
 target_link_libraries(_internal PRIVATE afdko_version detype1 type1 addfeatures spot sfntedit sfntdiff mergefonts rotatefont shared afdko::antlr4)
+
+if(CMAKE_USE_PTHREADS_INIT)
+    target_link_libraries(_internal PRIVATE Threads::Threads)
+endif()
 
 install(TARGETS _internal LIBRARY DESTINATION afdko)
 

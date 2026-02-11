@@ -37,6 +37,11 @@ if (HAVE_M_LIB)
     target_link_libraries(afdko PRIVATE m)
 endif()
 
+# Add pthread if needed (Linux with ANTLR4 static linking)
+if (CMAKE_USE_PTHREADS_INIT)
+    target_link_libraries(afdko PRIVATE Threads::Threads)
+endif()
+
 # Include directories for spot's sfnt_includes (shared provides ../shared/include and version.h)
 target_include_directories(afdko PRIVATE
     ../spot/sfnt_includes
