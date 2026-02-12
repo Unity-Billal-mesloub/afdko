@@ -3,6 +3,7 @@ import pytest
 from shutil import copy2, copytree, rmtree
 import subprocess
 import sys
+import tempfile
 
 from afdko.makeotf import (
     checkIfVertInFeature,
@@ -55,10 +56,7 @@ TTF_NAME = 'font.ttf'
 OTF_NAME = 'SourceSans-Test.otf'
 
 DATA_DIR = os.path.join(os.path.split(__file__)[0], TOOL + '_data')
-# Make TEMP_DIR unique per pytest-xdist worker to avoid race conditions
-_worker_id = os.getenv('PYTEST_XDIST_WORKER', '')
-_temp_suffix = f'_{_worker_id}' if _worker_id else ''
-TEMP_DIR = os.path.join(DATA_DIR, f'temp_output{_temp_suffix}')
+TEMP_DIR = None  # Initialized in setup_module()
 
 allow_skip_console = os.getenv('AFDKO_TEST_SKIP_CONSOLE',
                                'False').lower() in ('true', '1', 't')
@@ -75,17 +73,18 @@ xfail_py3_win = pytest.mark.xfail(
 
 def setup_module():
     """
-    Create the temporary output directory
+    Create the temporary output directory in system temp
     """
-    rmtree(TEMP_DIR, ignore_errors=True)
-    os.mkdir(TEMP_DIR)
+    global TEMP_DIR
+    TEMP_DIR = tempfile.mkdtemp(prefix='afdko_makeotf_test_')
 
 
 def teardown_module():
     """
     teardown the temporary output directory
     """
-    rmtree(TEMP_DIR)
+    if TEMP_DIR and os.path.exists(TEMP_DIR):
+        rmtree(TEMP_DIR)
 
 
 # -----
@@ -449,9 +448,7 @@ def test_cid_keyed_cff_bug470(args, font, fontinfo):
     else:
         ttx_file = f'bug470/{font}.ttx'
     font_file = f'bug470/{font}.pfa'
-    # 'dir=TEMP_DIR' is used for guaranteeing that the temp data is on same
-    # file system as other data; if it's not, a file rename step made by
-    # sfntedit will NOT work.
+    # Use TEMP_DIR to keep test files isolated
     actual_path = get_temp_file_path(directory=TEMP_DIR)
     runner(CMD + ['-o', 'f', f'_{get_input_path(font_file)}',
                         'o', f'_{actual_path}'] + args)
