@@ -502,10 +502,10 @@ class CFFFontData:
                 if bvattr == 'BlueValues':
                     bvs[0] = bvs[0] - bvs[1]  # type: ignore[index, assignment]
                     for i in range(3, numbvs, 2):
-                        bvs[i] = bvs[i] - bvs[i - 1]  # type: ignore[index, assignment]
+                        bvs[i] = bvs[i] - bvs[i - 1]  # type: ignore[index, assignment]  # noqa: E501
                 else:
                     for i in range(0, numbvs, 2):
-                        bvs[i] = bvs[i] - bvs[i + 1]  # type: ignore[index, assignment]
+                        bvs[i] = bvs[i] - bvs[i + 1]  # type: ignore[index, assignment]  # noqa: E501
 
                 numbvs = min(numbvs, len(bvkeys))
                 for i in range(numbvs):
@@ -519,8 +519,9 @@ class CFFFontData:
                     sstems = self.getPrivateDictVal(privateDict, ssnap,
                                                     [], dict_vsindex, vsi)
                 elif hasattr(privateDict, stdw):
-                    sstems = [self.getPrivateDictVal(  # type: ignore[assignment]
-                        privateDict, stdw, -1, dict_vsindex, vsi)]
+                    sstems = [  # type: ignore[assignment]
+                        self.getPrivateDictVal(
+                            privateDict, stdw, -1, dict_vsindex, vsi)]
                 else:
                     if allowNoBlues or self.is_vf:
                         # XXX adjusted for vf
@@ -533,7 +534,7 @@ class CFFFontData:
                                              (ssnap, stdw))
                 sstems.sort()  # type: ignore[union-attr]
                 if ((len(sstems) == 0) or  # type: ignore[arg-type]
-                        ((len(sstems) == 1) and (sstems[0] < 1))):  # type: ignore[arg-type, index]
+                        ((len(sstems) == 1) and (sstems[0] < 1))):  # type: ignore[arg-type, index]  # noqa: E501
                     sstems = [upm]  # dummy value that will allow PyAC to run
                     log.warning("There is no value or 0 value for %s." % fdkey)
                 fdDict.setInfo(fdkey, sstems)

@@ -735,11 +735,10 @@ def getFDInfo(
             if fdIndex is None:
                 continue
             if fdIndex not in fdArrayMap:
-                fddict = font.getPrivateFDDict(options.allowNoBlues,  # type: ignore[assignment]
-                                               options.noFlex,
-                                               options.vCounterGlyphs,
-                                               options.hCounterGlyphs,
-                                               desc, fdIndex)
+                fddict = font.getPrivateFDDict(  # type: ignore[assignment]
+                    options.allowNoBlues, options.noFlex,
+                    options.vCounterGlyphs, options.hCounterGlyphs,
+                    desc, fdIndex)
                 assert isinstance(fddict, FDDict)
                 fdArrayMap[fdIndex] = fddict
             fdSelectMap[name] = fdIndex

@@ -1504,9 +1504,9 @@ class dimensionHinter(ABC):
             sv.merge = False
         while True:
             try:
-                _, bst = max(((sv.best.compVal(self.SFactor), sv)  # type: ignore[union-attr]
-                              for sv in svl
-                              if not sv.merge))
+                _, bst = max(
+                    ((sv.best.compVal(self.SFactor), sv)  # type: ignore[union-attr]  # noqa: E501
+                     for sv in svl if not sv.merge))
             except ValueError:
                 break
             bst.merge = True
