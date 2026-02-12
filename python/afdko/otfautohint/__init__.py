@@ -1,6 +1,9 @@
 import os
 
 
+Number = int | float
+
+
 class FontParseError(Exception):
     pass
 

@@ -189,6 +189,7 @@ def runShellCmdLogging(cmd, shell=True):
         proc = subprocess.Popen(cmd, shell=shell, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT)
         while 1:
+            assert proc.stdout
             output = proc.stdout.readline().rstrip()
             if output:
                 print(output.decode('utf-8', 'backslashreplace'))
