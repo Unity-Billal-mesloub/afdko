@@ -84,6 +84,10 @@ ALL_COMMANDS = {
                            'Remove TTF components', 'secondary'),
     'ttxn': ('afdko.ttxn:main', 'TTX wrapper', 'secondary'),
 
+    # CONFIG COMMANDS - Configuration and setup
+    'completion': ('afdko.completion:main', 'Generate shell completion script',
+                   'config'),
+
     # PLOT COMMANDS - Proofing tools
     'charplot': ('afdko.proofpdf:charplot', 'Generate character proof',
                  'plot'),
@@ -143,6 +147,12 @@ def print_help(show_category: str = 'primary') -> None:
     if show_category in ('primary', 'all'):
         print("Primary Commands:")
         print_category_commands('primary')
+        print()
+
+    # Config commands shown with primary (distinctive display)
+    if show_category in ('primary', 'all'):
+        print("Configuration:")
+        print_category_commands('config')
         print()
 
     if show_category in ('secondary', 'all'):
