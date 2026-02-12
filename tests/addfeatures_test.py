@@ -803,6 +803,28 @@ def test_heap_after_free_bug1349():
                    '-r', r'^\s+Version.*;addfeatures *'])
 
 
+def test_negative_advance_width_bug1798():
+    """Test that fonts with negative advance widths are rejected with an error.
+
+    Negative advance widths in CFF CharStrings cannot be legally represented
+    in the hmtx table (which uses unsigned UFWORD). addfeatures should detect
+    and report an error for any glyphs with negative widths.
+    """
+    input_filename = "bug1798/font_negative_width.cff"
+    actual_path = get_temp_file_path()
+
+    stderr_path = runner(
+        CMD + ['-s', '-e', '-o',
+               'f', f'_{get_input_path(input_filename)}',
+               'o', f'_{actual_path}'])
+
+    with open(stderr_path, 'rb') as f:
+        output = f.read()
+    # Should report error about negative advance width
+    assert (b"has negative advance width" in output)
+    assert (b"Advance widths must be non-negative" in output)
+
+
 # ---------------------------------
 # Backwards Compatibility Tests
 # ---------------------------------

@@ -38,6 +38,11 @@ int hmtxFill(hotCtx g) {
     BBox bbox;
     for (size_t i = 0; i < g->glyphs.size(); i++) {
         auto &gl = g->glyphs[i];
+        if (gl.hAdv < 0) {
+            g->logger->log(sERROR, "Glyph '%s' has negative advance width (%d). "
+                           "Advance widths must be non-negative.",
+                           gl.gname.c_str(), gl.hAdv);
+        }
         hmtx.advanceWidth.push_back(gl.hAdv);
         // This should only execute for non-variable fonts
         bbox = hotDefaultGlyphBBox(g, i);
