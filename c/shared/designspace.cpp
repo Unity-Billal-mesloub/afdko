@@ -157,7 +157,6 @@ bool Designspace::readAxes(xmlDocPtr doc, xmlNodePtr axesptr) {
         axes.push_back(std::move(a));
         cur = cur->next;
     }
-    toerr();
     return true;
 }
 
