@@ -319,7 +319,7 @@ class stem(tuple):
         """Returns True if the stem is malformed"""
         return not self.isGhost() and (self.rt - self.lb) < 0
 
-    def relVals(self, last: "stem | None" = None) -> tuple[float, int] | tuple[float, float] | tuple[int, int] | tuple[int, float]:
+    def relVals(self, last: "stem | None" = None) -> tuple[Number, Number]:
         """
         Returns a tuple of "relative" stem values (start relative to
         the passed last stem, then width) appropriate for
@@ -331,7 +331,7 @@ class stem(tuple):
             l = 0
         return (norm_float(self.lb - l), norm_float(self.rt - self.lb))
 
-    def UFOVals(self) -> tuple[float, float] | tuple[int, int] | tuple[int, float]:
+    def UFOVals(self) -> tuple[Number, Number]:
         """Returns a tuple of stem values appropriate for UFO output"""
         return (self.lb, self.rt - self.lb)
 

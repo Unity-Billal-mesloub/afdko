@@ -1,5 +1,7 @@
 # Copyright 2021 Adobe. All rights reserved.
 
+from __future__ import annotations
+
 """
 Associates segments with points on a pathElement, then builds
 these into candidate stem pairs that are evaluated and pruned

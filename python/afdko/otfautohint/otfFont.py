@@ -1,5 +1,7 @@
 # Copyright 2014 Adobe. All rights reserved.
 
+from __future__ import annotations
+
 """
 Utilities for converting between T2 charstrings and glyphData objects.
 """

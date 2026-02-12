@@ -8,36 +8,37 @@
 import logging
 import time
 from collections import defaultdict
-from typing import Any, TYPE_CHECKING
-
-from . import Number
-
-if TYPE_CHECKING:
-    from .__main__ import ReportOptions
 
 log = logging.getLogger(__name__)
 
 
 class GlyphReport:
     """Class to store stem and zone data from a particular glyph"""
-
-    def __init__(self, name: str = "", all_stems: bool=False) -> None:
+    def __init__(self, name=None, all_stems=False):
         self.name = name
-        self.hstems: dict[float, int] = {}
-        self.vstems: dict[float, int] = {}
-        self.hstems_pos: set[tuple[Number, Number]] = set()
-        self.vstems_pos: set[tuple[Number, Number]] = set()
-        self.char_zones: set[tuple[Number, Number]] = set()
-        self.stem_zone_stems: set[tuple[Number, Number]] = set()
+        self.hstems = {}
+        self.vstems = {}
+        self.hstems_pos = set()
+        self.vstems_pos = set()
+        self.char_zones = set()
+        self.stem_zone_stems = set()
         self.all_stems = all_stems
 
-    def charZone(self, l: Number, u: Number) -> None:
+    def clear(self):
+        self.hstems.clear()
+        self.vstems.clear()
+        self.hstems_pos.clear()
+        self.vstems_pos.clear()
+        self.char_zones.clear()
+        self.stem_zones_stems.clear()
+
+    def charZone(self, l, u):
         self.char_zones.add((l, u))
 
-    def stemZone(self, l: Number, u: Number) -> None:
+    def stemZone(self, l, u):
         self.stem_zone_stems.add((l, u))
 
-    def stem(self, l: Number, u: Number, isLine: bool, isV: bool=False) -> None:
+    def stem(self, l, u, isLine, isV=False):
         if not isLine and not self.all_stems:
             return
         if isV:
@@ -52,35 +53,35 @@ class GlyphReport:
 
 
 class Report:
-    def __init__(self) -> None:
-        self.glyphs: dict[str, GlyphReport] = {}
+    def __init__(self):
+        self.glyphs = {}
 
     @staticmethod
-    def round_value(val: float) -> int:
+    def round_value(val):
         if val >= 0:
             return int(val + 0.5)
         else:
             return int(val - 0.5)
 
-    def parse_stem_dict(self, stem_dict: dict[float, int]) -> dict[float, int]:
+    def parse_stem_dict(self, stem_dict):
         """
         stem_dict: {45.5: 1, 47.0: 2}
         """
         # key: stem width
         # value: stem count
-        width_dict: dict[float, int] = defaultdict(int)
+        width_dict = defaultdict(int)
         for width, count in stem_dict.items():
             width = self.round_value(width)
             width_dict[width] += count
         return width_dict
 
-    def parse_zone_dicts(self, char_dict: set[tuple[Number, Number]], stem_dict: set[tuple[Number, Number]]) -> tuple[dict[Number, int], dict[Number, int]]:
+    def parse_zone_dicts(self, char_dict, stem_dict):
         all_zones_dict = char_dict.copy()
         all_zones_dict.update(stem_dict)
         # key: zone height
         # value: zone count
-        top_dict: dict[Number, int] = defaultdict(int)
-        bot_dict: dict[Number, int] = defaultdict(int)
+        top_dict = defaultdict(int)
+        bot_dict = defaultdict(int)
         for bot, top in all_zones_dict:
             top = self.round_value(top)
             top_dict[top] += 1
@@ -88,7 +89,7 @@ class Report:
             bot_dict[bot] += 1
         return top_dict, bot_dict
 
-    def assemble_rep_list(self, items_dict: dict[Number, set[str]], count_dict: dict[Number, int]) -> list[tuple[int, Number, list[str]]]:
+    def assemble_rep_list(self, items_dict, count_dict):
         # item 0: stem/zone count
         # item 1: stem width/zone height
         # item 2: list of glyph names
@@ -103,7 +104,7 @@ class Report:
             rep_list.append((count_dict[item], item, gnames))
         return rep_list
 
-    def _get_lists(self, options: "ReportOptions") -> tuple[list[tuple[int, Number, list[str]]], list[tuple[int, Number, list[str]]], list[tuple[int, Number, list[str]]], list[tuple[int, Number, list[str]]]]:
+    def _get_lists(self, options):
         """
         self.glyphs is a dictionary:
             key: glyph name
@@ -112,15 +113,15 @@ class Report:
         if not (options.report_stems or options.report_zones):
             return [], [], [], []
 
-        h_stem_items_dict: dict[Number, set[str]] = defaultdict(set)
-        h_stem_count_dict: dict[Number, int] = defaultdict(int)
-        v_stem_items_dict: dict[Number, set[str]] = defaultdict(set)
-        v_stem_count_dict: dict[Number, int] = defaultdict(int)
+        h_stem_items_dict = defaultdict(set)
+        h_stem_count_dict = defaultdict(int)
+        v_stem_items_dict = defaultdict(set)
+        v_stem_count_dict = defaultdict(int)
 
-        top_zone_items_dict: dict[Number, set[str]] = defaultdict(set)
-        top_zone_count_dict: dict[Number, int] = defaultdict(int)
-        bot_zone_items_dict: dict[Number, set[str]] = defaultdict(set)
-        bot_zone_count_dict: dict[Number, int] = defaultdict(int)
+        top_zone_items_dict = defaultdict(set)
+        top_zone_count_dict = defaultdict(int)
+        bot_zone_items_dict = defaultdict(set)
+        bot_zone_count_dict = defaultdict(int)
 
         for gName, gr in self.glyphs.items():
             if options.report_stems:
@@ -168,7 +169,7 @@ class Report:
         return h_stem_list, v_stem_list, top_zone_list, bot_zone_list
 
     @staticmethod
-    def _sort_count(t: tuple[int, Number, list[str]]) -> tuple[int, Number, list[str]]:
+    def _sort_count(t):
         """
         sort by: count (1st item), value (2nd item), list of glyph names (3rd
         item)
@@ -176,7 +177,7 @@ class Report:
         return (-t[0], -t[1], t[2])
 
     @staticmethod
-    def _sort_val(t: tuple[int, Number, list[str]]) -> tuple[Number, int, list[str]]:
+    def _sort_val(t):
         """
         sort by: value (2nd item), count (1st item), list of glyph names (3rd
         item)
@@ -184,14 +185,14 @@ class Report:
         return (t[1], -t[0], t[2])
 
     @staticmethod
-    def _sort_val_reversed(t: tuple[int, Number, list[str]]) -> tuple[Number, int, list[str]]:
+    def _sort_val_reversed(t):
         """
         sort by: value (2nd item), count (1st item), list of glyph names (3rd
         item)
         """
         return (-t[1], -t[0], t[2])
 
-    def save(self, path: str, options: "ReportOptions") -> None:
+    def save(self, path, options):
         h_stems, v_stems, top_zones, bot_zones = self._get_lists(options)
         items = ([h_stems, self._sort_count],
                  [v_stems, self._sort_count],
@@ -208,7 +209,7 @@ class Report:
                    ["count   height    glyphs\n"] * 2)
 
         for i, item in enumerate(items):
-            reps, sortFunc = item  # type: ignore[misc]
+            reps, sortFunc = item
             if not reps:
                 continue
             fName = f'{path}{suffixes[i]}'
@@ -217,8 +218,8 @@ class Report:
             with open(fName, "w") as fp:
                 fp.write(title)
                 fp.write(header)
-                reps.sort(key=sortFunc)  # type: ignore[attr-defined]
-                for rep in reps:  # type: ignore[attr-defined]
+                reps.sort(key=sortFunc)
+                for rep in reps:
                     gnames = ' '.join(rep[2])
                     fp.write(f"{rep[0]:5}    {rep[1]:5}    [{gnames}]\n")
                 log.info("Wrote %s" % fName)

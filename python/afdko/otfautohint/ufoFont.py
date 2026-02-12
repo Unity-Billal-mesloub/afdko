@@ -1,5 +1,7 @@
 # Copyright 2014 Adobe. All rights reserved.
 
+from __future__ import annotations
+
 """
 This module provides means of reading glyph data from and writing data
 to UFO fonts, partly in virtue of the fontTools UFO library.
@@ -120,7 +122,7 @@ from fontTools.ufoLib import UFOReader, UFOWriter
 from fontTools.ufoLib.errors import UFOLibError
 from fontTools.ufoLib.glifLib import Glyph, GlyphSet
 
-from . import fdTools, FontParseError
+from . import fdTools, FontParseError, Number
 from .glyphData import glyphData, norm_float
 from .fdTools import FDDict
 
@@ -819,7 +821,7 @@ class HashPointPen(AbstractPointPen):
 
     def addPoint(
         self,
-        pt: tuple[int, int] | tuple[int, float] | tuple[float, int] | tuple[float, float],
+        pt: tuple[Number, Number],
         segmentType: str | None = None,
         smooth: bool = False,
         name: str | None = None,

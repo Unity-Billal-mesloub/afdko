@@ -385,8 +385,6 @@ class fontWrapper:
                          self.numGlyphs())
 
             if report is not None:
-                from .__main__ import ReportOptions
-                assert isinstance(self.options, ReportOptions)
                 outpath = self.fontInstances[0].outpath
                 assert outpath is not None
                 report.save(outpath, self.options)
