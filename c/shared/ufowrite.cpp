@@ -1268,7 +1268,7 @@ static int glyphBeg(abfGlyphCallbacks *cb, abfGlyphInfo *info) {
     if (info->flags & ABF_GLYPH_UNICODE) {
         char buf[9];
         writeStr(h, "\t<unicode hex=\"");
-        snprintf(buf, sizeof(buf), "%06lX", info->encoding.code);
+        snprintf(buf, sizeof(buf), "%04lX", info->encoding.code);
         writeStr(h, buf);
         writeLine(h, "\"/>");
     }
