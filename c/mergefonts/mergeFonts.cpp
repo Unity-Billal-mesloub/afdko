@@ -705,21 +705,20 @@ static void stringStrip(char *str) {
     if (end == 0)
         return;
 
-    while (start < MAX_DICT_ENTRY_LEN) {
-        if ((str[start] == ' ') || (str[start] == '\t') || (str[start] == '(') || (str[start] == '\r') || (str[start] == '\n'))
-            start++;
-        else
-            break;
-    }
-
     while (end >= 0) {
         if ((str[end] == ' ') || (str[end] == '\t') || (str[end] == ')') || (str[end] == '\r') || (str[end] == '\n'))
             end--;
         else
             break;
     }
-
     str[end + 1] = 0;
+
+    while (start < MAX_DICT_ENTRY_LEN) {
+        if ((str[start] == ' ') || (str[start] == '\t') || (str[start] == '(') || (str[start] == '\r') || (str[start] == '\n'))
+            start++;
+        else
+            break;
+    }
     if (start > 0)
         memmove(str, &str[start], (end - start) + 2);
     if (strlen(str) == 0) {
