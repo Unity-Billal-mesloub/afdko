@@ -15,13 +15,8 @@ from copy import copy, deepcopy
 from abc import abstractmethod, ABC
 from typing import (
     Any,
-    Dict,
     Iterable,
-    List,
     NamedTuple,
-    Tuple,
-    Union,
-    Optional,
 )
 from typing_extensions import Self
 
@@ -464,7 +459,17 @@ class dimensionHinter(ABC):
         else:
             return self.isMulti
 
-    def addSegment(self, fr, to, loc, pe1: pathElement | None, pe2: pathElement | None, typ, desc, mid=False) -> None:
+    def addSegment(
+        self,
+        fr,
+        to,
+        loc,
+        pe1: pathElement | None,
+        pe2: pathElement | None,
+        typ,
+        desc,
+        mid=False
+    ) -> None:
         if pe1 is not None and isinstance(pe1.segment_sub, int):
             subpath, offset = pe1.position
             t = self.glyph.subpaths[subpath][offset]
@@ -1499,7 +1504,7 @@ class dimensionHinter(ABC):
             sv.merge = False
         while True:
             try:
-                _, bst = max(((sv.best.compVal(self.SFactor), sv)  # type: ignore
+                _, bst = max(((sv.best.compVal(self.SFactor), sv)  # type: ignore[union-attr]
                               for sv in svl
                               if not sv.merge))
             except ValueError:
@@ -2255,7 +2260,9 @@ class hhinter(dimensionHinter):
         """
         self.startFlex()
         assert self.fddict
-        blues = self.fddict.BlueValuesPairs + self.fddict.OtherBlueValuesPairs  # pytype: disable=attribute-error
+        # pytype: disable=attribute-error
+        blues = (self.fddict.BlueValuesPairs +
+                 self.fddict.OtherBlueValuesPairs)
         self.topPairs = [pair for pair in blues if not pair[4]]
         self.bottomPairs = [pair for pair in blues if pair[4]]
 
@@ -2281,8 +2288,9 @@ class hhinter(dimensionHinter):
         else:
             pl = self.topPairs
         for p in pl:
-            if (p[0] + self.fddict.BlueFuzz >= loc and  # pytype: disable=attribute-error
-                    p[1] - self.fddict.BlueFuzz <= loc):  # pytype: disable=attribute-error
+            # pytype: disable=attribute-error
+            if (p[0] + self.fddict.BlueFuzz >= loc and
+                    p[1] - self.fddict.BlueFuzz <= loc):
                 return True
         return False
 
@@ -2439,7 +2447,9 @@ class glyphHinter:
             masks.append(mask)
         return masks
 
-    def _hint(self, name: str, glyphTuple, fdKey) -> tuple[str, GlyphReport | Any | None]:
+    def _hint(
+        self, name: str, glyphTuple, fdKey
+    ) -> tuple[str, GlyphReport | Any | None]:
         """Top-level flex and stem hinting method for a glyph"""
         if isinstance(fdKey, tuple):
             assert len(fdKey) == 2

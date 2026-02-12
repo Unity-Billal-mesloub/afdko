@@ -347,7 +347,9 @@ STACK_LIMIT = 46
 
 
 class UFOFontData:
-    def __init__(self, path: str, log_only: bool, write_to_default_layer: bool) -> None:
+    def __init__(
+        self, path: str, log_only: bool, write_to_default_layer: bool
+    ) -> None:
         self._reader = UFOReader(path, validate=False)
 
         self.path = path

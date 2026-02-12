@@ -26,7 +26,8 @@ class OtfautohintLogRecord(Protocol):
     instance: str
     dimension: str
 
-    def getMessage(self) -> str: ...
+    def getMessage(self) -> str:
+        ...
 
 
 class DuplicateMessageFilter(logging.Filter):
@@ -51,7 +52,12 @@ class DuplicateMessageFilter(logging.Filter):
 
 
 class otfautoLogFormatter(logging.Formatter):
-    def __init__(self, fmt: str | None, datefmt: str | None = None, verbose: bool = False) -> None:
+    def __init__(
+        self,
+        fmt: str | None,
+        datefmt: str | None = None,
+        verbose: bool = False
+    ) -> None:
         super().__init__(fmt, datefmt)
         self.verbose = verbose
 
@@ -75,7 +81,11 @@ class otfautoLogFormatter(logging.Formatter):
                 super().format(record))
 
 
-def set_log_parameters(dimension: str | None = None, glyph: str | None = None, instance: str | None = None) -> None:
+def set_log_parameters(
+    dimension: str | None = None,
+    glyph: str | None = None,
+    instance: str | None = None
+) -> None:
     global log_glyph, log_dimension, log_instance
     if glyph is not None:
         log_glyph = glyph
@@ -85,7 +95,11 @@ def set_log_parameters(dimension: str | None = None, glyph: str | None = None, i
         log_instance = instance
 
 
-def logging_conf(verbose: int, logfile: str | None = None, handlers: list[logging.Handler] | None = None) -> None:
+def logging_conf(
+    verbose: int,
+    logfile: str | None = None,
+    handlers: list[logging.Handler] | None = None
+) -> None:
     if verbose == 0:
         log_level = logging.WARNING
     else:

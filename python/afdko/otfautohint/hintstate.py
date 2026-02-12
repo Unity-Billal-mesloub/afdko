@@ -15,12 +15,8 @@ from .glyphData import feq, pathElement, stem
 from typing import (
     Any,
     Callable,
-    Dict,
-    List,
-    Optional,
     Sequence,
     Set,
-    Tuple,
     Protocol,
 )
 from typing_extensions import Self
@@ -40,7 +36,7 @@ log: logging.Logger = logging.getLogger(__name__)
 class AHinter(Protocol):
     options: Any
 
-    def inBand(self, loc, isBottom: bool=False) -> bool:
+    def inBand(self, loc, isBottom: bool = False) -> bool:
         ...
 
 
@@ -174,7 +170,7 @@ class stemValue:
         spc,
         lseg: hintSegment,
         useg: hintSegment,
-        isGhost: bool=False,
+        isGhost: bool = False,
     ) -> None:
         assert lloc <= uloc
         self.val = val
@@ -216,7 +212,11 @@ class stemValue:
                 lloc = uloc + 21
         return (lloc, uloc)
 
-    def compVal(self, spcFactor: int | float = 1, ghostFactor: int | float = 1) -> tuple[Any, Any]:
+    def compVal(
+        self,
+        spcFactor: int | float = 1,
+        ghostFactor: int | float = 1
+    ) -> tuple[Any, Any]:
         """Represent self.val and self.spc as a comparable 2-tuple"""
         v = self.val
         if self.isGhost:
@@ -315,7 +315,8 @@ class glyphHintState:
         self.mainValues: list[stemValue] = []
         self.rejectValues: list[stemValue] = []
         self.counterHinted = False
-        self.stems: Sequence[list[stem]] | None = None  # in sorted glyphData format
+        # in sorted glyphData format
+        self.stems: Sequence[list[stem]] | None = None
         self.weights: list[float] = []
         self.keepHints = None
         self.hasOverlaps: bool = False
@@ -324,7 +325,9 @@ class glyphHintState:
         self.goodMask: list[bool] = []
         self.mainMask: list[bool] = []
 
-    def getPEState(self, pe, make: bool=False) -> pathElementHintState | None:
+    def getPEState(
+        self, pe, make: bool = False
+    ) -> pathElementHintState | None:
         """
         Returns the pathElementHintState object for pe, allocating the object
         if necessary
@@ -536,8 +539,14 @@ class instanceStemState:
         self.usedSegs: Set[int] = set()
         self.bb: bool | None = None
 
-    def addToLoc(self, loc: float, score: float, strong: bool=False,
-                 bb: bool=False, seg: Any = None) -> None:
+    def addToLoc(
+        self,
+        loc: float,
+        score: float,
+        strong: bool = False,
+        bb: bool = False,
+        seg: Any = None
+    ) -> None:
         if self.bb is not None:
             if self.bb != bb:
                 log.info("Mixed bounding-box and "

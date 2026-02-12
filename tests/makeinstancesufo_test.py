@@ -149,7 +149,7 @@ def test_features_copy(filename):
         from_path = _get_output_path(ufo_filename, 'expected_output')
         to_path = os.path.join(TEMP_DIR, ufo_filename)
         copytree(from_path, to_path)
-        paths.append((to_path, from_path))
+        paths.append((from_path, to_path))
     # run makeinstancesufo
     runner(['-t', TOOL, '-o', 'a', 'c', 'n', 'd',
             f'_{get_input_path(f"{filename}.designspace")}'])

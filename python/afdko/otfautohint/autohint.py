@@ -311,7 +311,9 @@ class fontWrapper:
             self.fw.notFound = self.notFound
             return name, gt, self.fw.dictManager.getRecKey(name, vsindex)
 
-    def __iter__(self) -> Iterator[tuple[str, tuple[glyphData], tuple[int, int]]]:
+    def __iter__(
+        self
+    ) -> Iterator[tuple[str, tuple[glyphData], tuple[int, int]]]:
         return self.glyphiter(self)  # type: ignore
 
     def hint(self) -> bool:

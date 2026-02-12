@@ -27,7 +27,7 @@ from fontTools.misc.psCharStrings import T2CharString
 from fontTools.ttLib.tables._f_v_a_r import Axis
 from fontTools.ttLib.tables.otTables import VarData
 
-from . import Number, fdTools, FontParseError
+from . import fdTools, FontParseError
 from .glyphData import glyphData
 
 # keep linting tools quiet about unused import
@@ -85,7 +85,9 @@ def denormalizeValue(nv: float, a: Axis) -> float:
     return v
 
 
-def denormalizeLocation(loc: dict[str, float], axes: list[Axis]) -> dict[str, float]:
+def denormalizeLocation(
+    loc: dict[str, float], axes: list[Axis]
+) -> dict[str, float]:
     return {a.axisTag: denormalizeValue(loc.get(a.axisTag, a.defaultValue), a)
             for a in axes}
 
@@ -517,8 +519,8 @@ class CFFFontData:
                     sstems = self.getPrivateDictVal(privateDict, ssnap,
                                                     [], dict_vsindex, vsi)
                 elif hasattr(privateDict, stdw):
-                    sstems = [self.getPrivateDictVal(privateDict, stdw, -1,
-                                                     dict_vsindex, vsi)]  # type: ignore[assignment]
+                    sstems = [self.getPrivateDictVal(  # type: ignore[assignment]
+                        privateDict, stdw, -1, dict_vsindex, vsi)]
                 else:
                     if allowNoBlues or self.is_vf:
                         # XXX adjusted for vf
@@ -530,8 +532,8 @@ class CFFFontData:
                         raise FontParseError("Font has neither %s nor %s!" %
                                              (ssnap, stdw))
                 sstems.sort()  # type: ignore[union-attr]
-                if (len(sstems) == 0) or ((len(sstems) == 1) and  # type: ignore[arg-type]
-                                          (sstems[0] < 1)):  # type: ignore[index]
+                if ((len(sstems) == 0) or  # type: ignore[arg-type]
+                        ((len(sstems) == 1) and (sstems[0] < 1))):  # type: ignore[arg-type, index]
                     sstems = [upm]  # dummy value that will allow PyAC to run
                     log.warning("There is no value or 0 value for %s." % fdkey)
                 fdDict.setInfo(fdkey, sstems)
@@ -595,7 +597,9 @@ class CFFFontData:
             setattr(privateDict, k, v)
 
     @staticmethod
-    def getInstanceName(vn: int, vsi: VarStoreInstancer, axes: list[Axis]) -> str:
+    def getInstanceName(
+        vn: int, vsi: VarStoreInstancer, axes: list[Axis]
+    ) -> str:
         if vn == 0:
             vals = (f'{v:g}' for v in (a.defaultValue for a in axes))
             return 'DEF{' + ','.join(vals) + '}'
@@ -631,7 +635,9 @@ class CFFFontData:
         return glyph_list, vsindex
 
     @staticmethod
-    def get_vs_data_models(topDict: TopDict, axes: list[Axis]) -> list[VarDataModel]:
+    def get_vs_data_models(
+        topDict: TopDict, axes: list[Axis]
+    ) -> list[VarDataModel]:
         otvs = topDict.VarStore.otVarStore
         region_list = otvs.VarRegionList.Region
         axis_tags = [axis_entry.axisTag for axis_entry in axes]

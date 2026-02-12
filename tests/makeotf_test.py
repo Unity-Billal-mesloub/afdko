@@ -55,7 +55,10 @@ TTF_NAME = 'font.ttf'
 OTF_NAME = 'SourceSans-Test.otf'
 
 DATA_DIR = os.path.join(os.path.split(__file__)[0], TOOL + '_data')
-TEMP_DIR = os.path.join(DATA_DIR, 'temp_output')
+# Make TEMP_DIR unique per pytest-xdist worker to avoid race conditions
+_worker_id = os.getenv('PYTEST_XDIST_WORKER', '')
+_temp_suffix = f'_{_worker_id}' if _worker_id else ''
+TEMP_DIR = os.path.join(DATA_DIR, f'temp_output{_temp_suffix}')
 
 allow_skip_console = os.getenv('AFDKO_TEST_SKIP_CONSOLE',
                                'False').lower() in ('true', '1', 't')

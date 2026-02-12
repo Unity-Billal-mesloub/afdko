@@ -141,7 +141,12 @@ class FDDict:
     OrigEmSqUnits: Number
     FontName: str | None
 
-    def __init__(self, fdIndex: int | None, dictName: str | None = None, fontName: str | None = None) -> None:
+    def __init__(
+        self,
+        fdIndex: int | None,
+        dictName: str | None = None,
+        fontName: str | None = None
+    ) -> None:
         self.fdIndex = fdIndex
         for key in kFDDictKeys:
             setattr(self, key, None)
@@ -730,11 +735,11 @@ def getFDInfo(
             if fdIndex is None:
                 continue
             if fdIndex not in fdArrayMap:
-                fddict = font.getPrivateFDDict(options.allowNoBlues,
+                fddict = font.getPrivateFDDict(options.allowNoBlues,  # type: ignore[assignment]
                                                options.noFlex,
                                                options.vCounterGlyphs,
                                                options.hCounterGlyphs,
-                                               desc, fdIndex)  # type: ignore[assignment]
+                                               desc, fdIndex)
                 assert isinstance(fddict, FDDict)
                 fdArrayMap[fdIndex] = fddict
             fdSelectMap[name] = fdIndex

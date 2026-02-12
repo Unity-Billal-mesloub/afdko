@@ -10,7 +10,7 @@ from copy import deepcopy
 from math import sqrt
 from collections import defaultdict
 from builtins import tuple as _tuple
-from typing import Iterator, Optional, Any, Callable
+from typing import Iterator, Any, Callable
 from typing_extensions import Self
 
 from fontTools.misc.bezierTools import (
@@ -85,7 +85,12 @@ class pt(tuple):
         """
         cls.tl.align = None
 
-    def __new__(cls, x: int | float | tuple[int, int] = 0, y: int | float = 0, roundCoords: bool = False):
+    def __new__(
+        cls,
+        x: int | float | tuple[int, int] = 0,
+        y: int | float = 0,
+        roundCoords: bool = False
+    ):
         """
         Creates a new pt object initialied with x and y.
 
@@ -223,7 +228,7 @@ class pt(tuple):
         """
         return pt(abs(self[0]), abs(self[1]))
 
-    def round(self, dec: int=0):
+    def round(self, dec: int = 0):
         """Returns a new pt object with rounded coordinate values"""
         return pt(round(self[0], dec), round(self[1], dec))
 
@@ -245,7 +250,9 @@ class pt(tuple):
                             'number')
         return pt(self[0] * other, self[1] * other)
 
-    def __eq__(self, other: object, factor: float = 1.52e-5) -> bool:  # type: ignore[override]
+    def __eq__(
+        self, other: object, factor: float = 1.52e-5
+    ) -> bool:  # type: ignore[override]
         """Returns True if each coordinate is feq to that of the argument"""
         if not isinstance(other, pt):
             return NotImplemented
@@ -400,7 +407,7 @@ class boundsState:
             else:
                 self.bounds = self.lb
 
-    def mergePt(self, b, p, t, doExt: bool=True) -> None:
+    def mergePt(self, b, p, t, doExt: bool = True) -> None:
         """
         Add the passed point into the bounds as a potential extreme.
 
@@ -446,7 +453,7 @@ class boundsState:
 
         self.bounds = curveb
 
-    def farthestExtreme(self, doY: bool=False):
+    def farthestExtreme(self, doY: bool = False):
         """
         Returns the location, defining point, and t value for the
         bound farthest from the linear bounds in the dimension selected
@@ -465,7 +472,7 @@ class boundsState:
         else:
             return 0, None, None, None
 
-    def intersects(self, other, margin: int=0):
+    def intersects(self, other, margin: int = 0):
         """
         Returns True if the bounds of this object are within those of
         the argument
@@ -533,8 +540,14 @@ class pathElement:
     cs: pt
     ce: pt
 
-    def __init__(self, *args, is_close: bool=False, masks=None, flex: bool=False,
-                 position=None) -> None:
+    def __init__(
+        self,
+        *args,
+        is_close: bool = False,
+        masks=None,
+        flex: bool = False,
+        position=None
+    ) -> None:
         self.is_line = False
         self.is_close = is_close
         for p in args:
@@ -617,7 +630,12 @@ class pathElement:
         del self.ce
         self.bounds = None
 
-    def convertToCurve(self, sRatio: float=.333333, eRatio=None, roundCoords: bool=False) -> None:
+    def convertToCurve(
+        self,
+        sRatio: float = .333333,
+        eRatio=None,
+        roundCoords: bool = False
+    ) -> None:
         """
         If the pathElement is not already a curve, make it one. The control
         points are made colinear to preseve the shape. self.cs will be
@@ -633,7 +651,7 @@ class pathElement:
         self.cs = self.s * (1 - sRatio) + self.e * sRatio
         self.ce = self.s * eRatio + self.e * (1 - eRatio)
 
-    def clearHints(self, doVert: bool=False) -> None:
+    def clearHints(self, doVert: bool = False) -> None:
         """Clear the vertical or horizontal masks, if any"""
         if doVert and self.masks is not None:
             self.masks = [self.masks[0], None] if self.masks[0] else None
@@ -649,7 +667,7 @@ class pathElement:
         """Returns the fontTools cubic parameters for this pathElement"""
         return calcCubicParameters(self.s, self.cs, self.ce, self.e)
 
-    def getAssocFactor(self, loose: bool=False):
+    def getAssocFactor(self, loose: bool = False):
         if self.is_line:
             l = sqrt(self.s.distsq(self.e))
         else:
@@ -657,7 +675,7 @@ class pathElement:
         return l / (self.assocMatchFactor / 2
                     if loose else self.assocMatchFactor)
 
-    def containsPoint(self, p, factor, returnT: bool=False):
+    def containsPoint(self, p, factor, returnT: bool = False):
         if self.is_line:
             # We sometimes want t anyway, so why not?
             ds = sqrt(self.s.distsq(self.e))
@@ -866,7 +884,12 @@ class glyphData(BasePen):
                                              flex=self.checkFlex(False),
                                              position=self.getPosition()))
 
-    def _curveToOne(self, ptup1: tuple[int, int], ptup2: tuple[int, int], ptup3: tuple[int, int]) -> None:
+    def _curveToOne(
+        self,
+        ptup1: tuple[int, int],
+        ptup2: tuple[int, int],
+        ptup3: tuple[int, int]
+    ) -> None:
         """lineTo pen method"""
         self.lastcp = None
         curpt = pt(self._getCurrentPoint(), roundCoords=self.roundCoords)
@@ -976,7 +999,12 @@ class glyphData(BasePen):
         """Returns True if at least one curve pair is flex-hinted"""
         return self.flex_count > 0
 
-    def hasHints(self, doVert: bool = False, both: bool = False, either: bool = False) -> bool:
+    def hasHints(
+        self,
+        doVert: bool = False,
+        both: bool = False,
+        either: bool = False
+    ) -> bool:
         """
         Returns True if there are hints of the parameter-specified type(s)
         """
@@ -1125,7 +1153,7 @@ class glyphData(BasePen):
             return self.subpaths[-1][-1]
         return None
 
-    def next(self, c, segSub: bool=False):
+    def next(self, c, segSub: bool = False):
         """
         If c == self, returns the first elemeht of the path
 
@@ -1246,7 +1274,13 @@ class glyphData(BasePen):
                 return None
         return c
 
-    def nextInSubpath(self, c, skipTiny: bool=False, closeWrapOK: bool=True, segSub: bool=False):
+    def nextInSubpath(
+        self,
+        c,
+        skipTiny: bool = False,
+        closeWrapOK: bool = True,
+        segSub: bool = False
+    ):
         """
         Returns the next element in the subpath after c.
 
@@ -1257,7 +1291,13 @@ class glyphData(BasePen):
         """
         return self.inSubpath(c, 1, skipTiny, closeWrapOK, segSub)
 
-    def prevInSubpath(self, c, skipTiny: bool=False, closeWrapOK: bool=True, segSub: bool=False):
+    def prevInSubpath(
+        self,
+        c,
+        skipTiny: bool = False,
+        closeWrapOK: bool = True,
+        segSub: bool = False
+    ):
         """
         Returns the previous element in the subpath before c.
 
@@ -1331,7 +1371,7 @@ class glyphData(BasePen):
                 return True
         return False
 
-    def associatePath(self, orig, loose: bool=False) -> None:
+    def associatePath(self, orig, loose: bool = False) -> None:
         peMap = defaultdict(list)
         for oc in orig:
             peMap[tuple(oc.e.round(1))].append(oc)
@@ -1466,7 +1506,7 @@ class glyphData(BasePen):
             c.flex = None
         self.flex_count = 0
 
-    def clearHints(self, doVert: bool=False) -> None:
+    def clearHints(self, doVert: bool = False) -> None:
         """Clears stem hints in specified dimension"""
         if doVert:
             self.vstems = []

@@ -90,7 +90,8 @@ def generate_fish(commands: List[Tuple[str, str]]) -> str:
     """Generate fish completion script."""
     # Generate one complete line per command
     complete_lines = '\n'.join(
-        f'complete -c afdko -f -n "__fish_use_subcommand" -a {name} -d "{desc}"'
+        f'complete -c afdko -f -n "__fish_use_subcommand" '
+        f'-a {name} -d "{desc}"'
         for name, desc in commands
     )
 
@@ -124,7 +125,8 @@ Register-ArgumentCompleter -Native -CommandName afdko -ScriptBlock {{
     if ($words.Count -le 2) {{
         $commands = @({cmd_list})
 
-        $commands | Where-Object {{ $_ -like "$wordToComplete*" }} | ForEach-Object {{
+        $commands | Where-Object {{ $_ -like "$wordToComplete*" }} |
+            ForEach-Object {{
             [System.Management.Automation.CompletionResult]::new(
                 $_,
                 $_,
@@ -154,7 +156,8 @@ def print_help() -> None:
     print('  eval "$(afdko completion bash)"')
     print()
     print("  # zsh - save to a directory in $fpath")
-    print("  afdko completion zsh > /usr/local/share/zsh/site-functions/_afdko")
+    print("  afdko completion zsh > "
+          "/usr/local/share/zsh/site-functions/_afdko")
     print()
     print("  # fish - save to completions directory")
     print("  afdko completion fish > ~/.config/fish/completions/afdko.fish")
@@ -173,8 +176,10 @@ def main() -> int:
 
     if shell not in SUPPORTED_SHELLS:
         print(f"Error: Unsupported shell '{shell}'", file=sys.stderr)
-        print(f"Supported shells: {', '.join(SUPPORTED_SHELLS)}", file=sys.stderr)
-        print("Run 'afdko completion --help' for more information.", file=sys.stderr)
+        print(f"Supported shells: {', '.join(SUPPORTED_SHELLS)}",
+              file=sys.stderr)
+        print("Run 'afdko completion --help' for more information.",
+              file=sys.stderr)
         return 1
 
     # Get commands and generate completion script

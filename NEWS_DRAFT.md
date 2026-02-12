@@ -2,7 +2,7 @@
 ------------------
 **Major restructuring: Unified command interface, massive C++ modernization, and build system overhaul**
 
-This is a major release with extensive architectural changes including a substantial C→C++ conversion. While we have worked to maintain compatibility, the scope of changes means there may be regressions. Users with critical workflows may choose to wait for 5.0.1 or 5.0.2 before upgrading.
+This is a major release with extensive architectural changes including a substantial C→C++ conversion. While we have worked to maintain compatibility, with this much change there are likely to be regressions. Users not in a position to thoroughly verify their output may want to wait for 5.0.1 or 5.0.2 before upgrading.
 
 ### Summary of Command and Interface Changes
 
@@ -15,19 +15,17 @@ This is a major release with extensive architectural changes including a substan
   ```
 - **Deprecated wrappers**: Individual command wrappers (e.g., `makeotf`, `tx`, `spot`) are deprecated with gradual rollout:
   - By default, wrappers work silently (opt-in warnings with `AFDKO_WRAPPER_MODE=warn`)
-  - Two-tier removal timeline: less-used commands in 6 months, commonly-used commands in 12 months
-  - Wrappers will omit warnings
+  - Two-tier removal timeline: less-used commands will be present for at least 6 months, commonly-used commands for at least 12 months
+  - Wrappers will start to omit warnings in a future release
   - See [docs/Deprecation_System.md](docs/Deprecation_System.md) for details
 
 #### makeotfexe → addfeatures Transition
-- **Name change**: `makeotfexe` has been replaced by `addfeatures`
-  - `makeotf` wrapper handles this change automatically for most workflows
-- **Workflow changes**: For direct invocation, you may now need to build a CFF table first using `tx`
-  - `tx` has been enhanced with features previously exclusive to `makeotfexe`, including GlyphOrderAndAliasDB support
-- **Variable Font Support**: `addfeatures` supports more direct building of variable fonts:
+- **Variable Font Support**: `addfeatures`, which replaces `makeotfexe`, supports more direct building of variable fonts:
   - Accepts CFF2 table as input in addition to CFF
   - Enhanced feature file syntax for direct specification of variable values
     - See [docs/CFF2_Support.md](docs/CFF2_Support.md) for details
+- **Workflow changes**: For direct invocation, you may now need to build a CFF table first using `tx`
+  - `tx` has been enhanced with features previously exclusive to `makeotfexe`, including GlyphOrderAndAliasDB support
 
 ### Other Changes
 
