@@ -2,6 +2,7 @@ name: AFDKO Test Suite
 
 on:
   push:
+    branches: [develop]
     paths-ignore:
       - 'docs/**'
       - '**.md'
