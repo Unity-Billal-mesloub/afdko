@@ -24,6 +24,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24 AND DEFINED ENV{FORCE_SYSTEM_ANTLR4}
 endif()
 FetchContent_Declare(antlr4-runtime
     SOURCE_SUBDIR runtime/Cpp
+    EXCLUDE_FROM_ALL
     ${fetch_content_args}
 )
 

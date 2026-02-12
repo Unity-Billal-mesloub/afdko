@@ -11,6 +11,7 @@ endif()
 FetchContent_Declare(LibXml2
         GIT_REPOSITORY https://gitlab.gnome.org/GNOME/libxml2.git
         GIT_TAG ${LIBXML2_TAG}
+        EXCLUDE_FROM_ALL
 )
 
 option(AFDKO_BUILD_LIBXML2_SHARED_LIB
