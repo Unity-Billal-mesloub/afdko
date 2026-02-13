@@ -1,5 +1,10 @@
 [build-system]
-requires = ["scikit-build-core", "setuptools-scm", "cython"]
+requires = [
+    "scikit-build-core",
+    "setuptools-scm",
+    "cython",
+    "skbuild-conditional-scripts",
+]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -44,43 +49,8 @@ repository = "https://github.com/adobe-type-tools/afdko"
 documentation = "https://github.com/adobe-type-tools/afdko/tree/develop/docs"
 changelog = "https://github.com/adobe-type-tools/afdko/blob/develop/NEWS.md"
 
-[project.scripts]
-# Note: The 'afdko' command is provided dynamically via afdko._build_scripts
-# It will be either the C++ binary or Python wrapper depending on AFDKO_COMMAND_USE_WRAPPER
-#
-# Individual command wrappers (DEPRECATED - use 'afdko <command>' instead)
-# Set AFDKO_WRAPPER_MODE=warn to see deprecation warnings
-addfeatures = "afdko._deprecated:addfeatures_wrapper"
-makeotfexe = "afdko._deprecated:makeotfexe_wrapper"
-buildcff2vf = "afdko._deprecated:buildcff2vf_wrapper"
-buildmasterotfs = "afdko._deprecated:buildmasterotfs_wrapper"
-charplot = "afdko._deprecated:charplot_wrapper"
-checkoutlinesufo = "afdko._deprecated:checkoutlinesufo_wrapper"
-comparefamily = "afdko._deprecated:comparefamily_wrapper"
-detype1 = "afdko._deprecated:detype1_wrapper"
-digiplot = "afdko._deprecated:digiplot_wrapper"
-fontplot = "afdko._deprecated:fontplot_wrapper"
-fontplot2 = "afdko._deprecated:fontplot2_wrapper"
-fontsetplot = "afdko._deprecated:fontsetplot_wrapper"
-hintplot = "afdko._deprecated:hintplot_wrapper"
-makeinstancesufo = "afdko._deprecated:makeinstancesufo_wrapper"
-makeotf = "afdko._deprecated:makeotf_wrapper"
-mergefonts = "afdko._deprecated:mergefonts_wrapper"
-otc2otf = "afdko._deprecated:otc2otf_wrapper"
-otf2otc = "afdko._deprecated:otf2otc_wrapper"
-otf2ttf = "afdko._deprecated:otf2ttf_wrapper"
-otfautohint = "afdko._deprecated:otfautohint_wrapper"
-otfstemhist = "afdko._deprecated:otfstemhist_wrapper"
-rotatefont = "afdko._deprecated:rotatefont_wrapper"
-sfntdiff = "afdko._deprecated:sfntdiff_wrapper"
-sfntedit = "afdko._deprecated:sfntedit_wrapper"
-spot = "afdko._deprecated:spot_wrapper"
-ttfcomponentizer = "afdko._deprecated:ttfcomponentizer_wrapper"
-ttfdecomponentizer = "afdko._deprecated:ttfdecomponentizer_wrapper"
-ttxn = "afdko._deprecated:ttxn_wrapper"
-tx = "afdko._deprecated:tx_wrapper"
-type1 = "afdko._deprecated:type1_wrapper"
-waterfallplot = "afdko._deprecated:waterfallplot_wrapper"
+# [project.scripts] is generated dynamically by skbuild-conditional-scripts
+# See https://pypi.org/project/skbuild-conditional-scripts/
 
 [project.optional-dependencies]
 tests = [
@@ -92,11 +62,56 @@ tests = [
 [tool.scikit-build]
 # cmake.verbose = true
 # logging.level = "INFO"
-metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
-metadata.scripts.provider = "afdko._build_scripts"
+experimental = true
 minimum-version = "0.5"
 cmake.minimum-version = "3.16"
 sdist.exclude = [".github"]
+
+# Dynamic version from git tags
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+
+# Dynamic scripts with conditional installation
+metadata.scripts.provider = "skbuild_conditional_scripts"
+
+# Always installed: deprecated wrapper scripts for all commands
+metadata.scripts.scripts.addfeatures = "afdko._deprecated:addfeatures_wrapper"
+metadata.scripts.scripts.detype1 = "afdko._deprecated:detype1_wrapper"
+metadata.scripts.scripts.mergefonts = "afdko._deprecated:mergefonts_wrapper"
+metadata.scripts.scripts.rotatefont = "afdko._deprecated:rotatefont_wrapper"
+metadata.scripts.scripts.sfntdiff = "afdko._deprecated:sfntdiff_wrapper"
+metadata.scripts.scripts.sfntedit = "afdko._deprecated:sfntedit_wrapper"
+metadata.scripts.scripts.spot = "afdko._deprecated:spot_wrapper"
+metadata.scripts.scripts.tx = "afdko._deprecated:tx_wrapper"
+metadata.scripts.scripts.type1 = "afdko._deprecated:type1_wrapper"
+metadata.scripts.scripts.buildcff2vf = "afdko._deprecated:buildcff2vf_wrapper"
+metadata.scripts.scripts.buildmasterotfs = "afdko._deprecated:buildmasterotfs_wrapper"
+metadata.scripts.scripts.checkoutlinesufo = "afdko._deprecated:checkoutlinesufo_wrapper"
+metadata.scripts.scripts.comparefamily = "afdko._deprecated:comparefamily_wrapper"
+metadata.scripts.scripts.makeinstancesufo = "afdko._deprecated:makeinstancesufo_wrapper"
+metadata.scripts.scripts.makeotf = "afdko._deprecated:makeotf_wrapper"
+metadata.scripts.scripts.makeotfexe = "afdko._deprecated:makeotfexe_wrapper"
+metadata.scripts.scripts.otc2otf = "afdko._deprecated:otc2otf_wrapper"
+metadata.scripts.scripts.otf2otc = "afdko._deprecated:otf2otc_wrapper"
+metadata.scripts.scripts.otf2ttf = "afdko._deprecated:otf2ttf_wrapper"
+metadata.scripts.scripts.ttfcomponentizer = "afdko._deprecated:ttfcomponentizer_wrapper"
+metadata.scripts.scripts.ttfdecomponentizer = "afdko._deprecated:ttfdecomponentizer_wrapper"
+metadata.scripts.scripts.ttxn = "afdko._deprecated:ttxn_wrapper"
+metadata.scripts.scripts.charplot = "afdko._deprecated:charplot_wrapper"
+metadata.scripts.scripts.digiplot = "afdko._deprecated:digiplot_wrapper"
+metadata.scripts.scripts.fontplot = "afdko._deprecated:fontplot_wrapper"
+metadata.scripts.scripts.fontplot2 = "afdko._deprecated:fontplot2_wrapper"
+metadata.scripts.scripts.fontsetplot = "afdko._deprecated:fontsetplot_wrapper"
+metadata.scripts.scripts.hintplot = "afdko._deprecated:hintplot_wrapper"
+metadata.scripts.scripts.waterfallplot = "afdko._deprecated:waterfallplot_wrapper"
+metadata.scripts.scripts.otfautohint = "afdko._deprecated:otfautohint_wrapper"
+metadata.scripts.scripts.otfstemhist = "afdko._deprecated:otfstemhist_wrapper"
+
+# Conditionally installed: Python wrapper for unified afdko command
+# Only installed when AFDKO_COMMAND_USE_WRAPPER=ON
+# When not installed, CMake installs the C++ binary instead
+metadata.scripts.conditional-scripts.afdko = "afdko.invoker:main"
+metadata.scripts.condition-env-var = "AFDKO_COMMAND_USE_WRAPPER"
+metadata.scripts.condition-env-value = "ON"
 
 [tool.setuptools_scm]
 
