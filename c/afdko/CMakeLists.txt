@@ -4,10 +4,39 @@
 # subcommands to their appropriate implementations.
 #
 # Requires Python Development.Embed for embedding Python interpreter.
-# On Linux wheel builds, set AFDKO_BUILD_BINARY=OFF to skip this.
+# On Linux wheel builds, set AFDKO_COMMAND_USE_WRAPPER=ON to use the
+# Python wrapper instead of building this binary.
 
 # Find Python with embedding support
-find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
+# Note: Development.Embed is needed for embedding Python interpreter in C++
+find_package(Python COMPONENTS Interpreter Development.Embed QUIET)
+
+if(NOT Python_FOUND)
+    message(FATAL_ERROR
+        "Cannot build afdko C++ binary: Python Development.Embed not found.\n"
+        "\n"
+        "The afdko binary requires Python development headers with embedding support.\n"
+        "This is typically unavailable in manylinux containers and some minimal Python\n"
+        "installations.\n"
+        "\n"
+        "WORKAROUND: Use the Python wrapper instead of the C++ binary:\n"
+        "  - Set environment variable: AFDKO_COMMAND_USE_WRAPPER=ON\n"
+        "  - Then rebuild/reinstall AFDKO\n"
+        "\n"
+        "Example:\n"
+        "  export AFDKO_COMMAND_USE_WRAPPER=ON\n"
+        "  pip install --force-reinstall --no-cache-dir afdko\n"
+        "\n"
+        "Note: The Python wrapper has slightly slower startup time but identical\n"
+        "functionality. Most users won't notice the difference.\n"
+        "\n"
+        "To install Python development headers on your system:\n"
+        "  - Debian/Ubuntu: sudo apt-get install python3-dev\n"
+        "  - RHEL/Fedora: sudo dnf install python3-devel\n"
+        "  - macOS: Install full Python from python.org (not just Xcode CLI tools)\n"
+        "  - Windows: Ensure 'Development' features are checked in Python installer\n"
+    )
+endif()
 
 add_executable(afdko
     afdko_main.cpp

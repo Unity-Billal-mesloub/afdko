@@ -3,7 +3,7 @@ requires = ["scikit-build-core", "setuptools-scm", "cython"]
 build-backend = "scikit_build_core.build"
 
 [project]
-dynamic = ["version"]
+dynamic = ["version", "scripts"]
 name = "afdko"
 description = "Adobe Font Development Kit for OpenType"
 readme = "README.md"
@@ -45,8 +45,9 @@ documentation = "https://github.com/adobe-type-tools/afdko/tree/develop/docs"
 changelog = "https://github.com/adobe-type-tools/afdko/blob/develop/NEWS.md"
 
 [project.scripts]
-# Unified command interface (primary)
-afdko = "afdko.invoker:main"
+# Note: The 'afdko' command is provided dynamically via afdko._build_scripts
+# It will be either the C++ binary or Python wrapper depending on AFDKO_COMMAND_USE_WRAPPER
+#
 # Individual command wrappers (DEPRECATED - use 'afdko <command>' instead)
 # Set AFDKO_WRAPPER_MODE=warn to see deprecation warnings
 addfeatures = "afdko._deprecated:addfeatures_wrapper"
@@ -92,6 +93,7 @@ tests = [
 # cmake.verbose = true
 # logging.level = "INFO"
 metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+metadata.scripts.provider = "afdko._build_scripts"
 minimum-version = "0.5"
 cmake.minimum-version = "3.16"
 sdist.exclude = [".github"]

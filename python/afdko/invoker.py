@@ -6,7 +6,7 @@ for the unified 'afdko' command.
 
 It is used by:
 1. The C++ binary (for non-C++ commands, help, errors)
-2. The Python wrapper mode (when AFDKO_BUILD_BINARY=OFF)
+2. The Python wrapper mode (when AFDKO_COMMAND_USE_WRAPPER=ON)
 
 This keeps all command logic and help text in one maintainable location.
 """
