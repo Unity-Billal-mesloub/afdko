@@ -1561,23 +1561,52 @@ class dimensionHinter(ABC):
 
     def limitVals(self) -> None:
         """
-        Limit the number of stem values in a dimension
+        Limit the number of stem values in a dimension to unique positions
+
+        Groups stems by location and trims to StemLimit unique positions,
+        preserving all duplicates for the kept positions.
         """
         svl = self.hs.stemValues
         if len(svl) <= self.StemLimit:
             return
 
-        log.info("Trimming stem list to %g from %g" %
-                 (self.StemLimit, len(svl)))
+        # Group by location
+        location_groups: dict[tuple[Number, Number], list[stemValue]] = {}
+        for sv in svl:
+            key = (sv.lloc, sv.uloc)
+            if key not in location_groups:
+                location_groups[key] = []
+            location_groups[key].append(sv)
+
+        # Create list of representatives (one per unique location)
+        representatives = [group[0] for group in location_groups.values()]
+
+        if len(representatives) <= self.StemLimit:
+            return  # Even unique positions fit, no trimming needed
+
+        log.info("Trimming stem list to %g from %g unique positions" %
+                 (self.StemLimit, len(representatives)))
         # This will leave some segments with .highest entries that aren't
         # part of the stemValues list, but those won't get .idx values so
         # things will mostly work out. We could do better trying to find
         # alternative hints for segments. (Thee previous code just chopped
         # the list at one end.)
-        ol = [(sv.compVal(self.SpcBonus), sv) for sv in svl]
+
+        # Sort representatives by weight
+        ol = [(sv.compVal(self.SpcBonus), sv) for sv in representatives]
         ol.sort(reverse=True)
 
-        svl[:] = sorted((sv for weight, sv in ol[:self.StemLimit]))
+        # Keep top StemLimit representatives (store their locations)
+        kept_locations = set((sv.lloc, sv.uloc) for weight, sv in ol[:self.StemLimit])
+
+        # Expand back: keep all stems whose location matches a kept representative
+        kept_stems = []
+        for sv in svl:
+            key = (sv.lloc, sv.uloc)
+            if key in kept_locations:
+                kept_stems.append(sv)
+
+        svl[:] = sorted(kept_stems)
 
     # Reporting
 
