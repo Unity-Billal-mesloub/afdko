@@ -8,6 +8,11 @@
 
 #include <iostream>
 #include <string>
+#ifndef _WIN32
+#include <unistd.h>  /* For fsync() */
+#else
+#include <io.h>  /* For _commit() */
+#endif
 
 #include "afdko_version.h"
 #include "varsupport.h"
@@ -410,6 +415,9 @@ static int stm_close(ctlStreamCallbacks *cb, void *stream) {
     else {
         int retval;
         FILE *fp = s->fp;
+        /* Explicitly flush before close to prevent race conditions */
+        if (fflush(fp) == EOF)
+            return -1;  /* Flush failed */
         retval = fclose(fp);
         s->fp = NULL; /* Avoid re-close */
         if (s->type == stm_SrcUFO) {
@@ -523,6 +531,9 @@ static void dstFileOpen(txCtx h, abfTopDict *top) {
 /* Close destination file. */
 static void dstFileClose(txCtx h) {
     if (h->dst.stm.fp != stdout) {
+        /* Flush before close to ensure all data is written */
+        if (fflush(h->dst.stm.fp) == EOF)
+            fileError(h, h->dst.stm.filename);
         if (fclose(h->dst.stm.fp))
             fileError(h, h->dst.stm.filename);
     }
