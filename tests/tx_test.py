@@ -1705,6 +1705,36 @@ def test_parsing_attrs_bug1673():
     assert differ([expected_path, output_path, '-s', PFA_SKIP[0]])
 
 
+def test_ufo_version_zero_major_bug1769():
+    """Test that versionMajor=0 is correctly written to UFO (issue #1769)."""
+    import xml.etree.ElementTree as ET
+
+    input_path = get_input_path('version_zero.pfa')
+    output_path = get_temp_dir_path('version_zero.ufo')
+    subprocess.call(_tool_cmd('-ufo', '-o', output_path, input_path))
+
+    # Parse fontinfo.plist
+    fontinfo_path = os.path.join(output_path, 'fontinfo.plist')
+    tree = ET.parse(fontinfo_path)
+    root = tree.getroot()
+
+    # Find versionMajor and versionMinor values
+    # In a plist, keys and values alternate in the dict element
+    dict_elem = root.find('.//dict')
+    keys = [elem.text for elem in dict_elem.findall('key')]
+    values = [elem for elem in dict_elem if elem.tag != 'key']
+
+    version_major_idx = keys.index('versionMajor')
+    version_minor_idx = keys.index('versionMinor')
+
+    major_value = values[version_major_idx].text
+    minor_value = values[version_minor_idx].text
+
+    # Verify versionMajor is '0', not empty
+    assert major_value == '0', f"versionMajor should be '0', got '{major_value}'"
+    assert minor_value == '500', f"versionMinor should be '500', got '{minor_value}'"
+
+
 # ---------------------------------
 # Backwards Compatibility Tests
 # ---------------------------------

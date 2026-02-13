@@ -890,6 +890,8 @@ static void setVersionMajor(char *dst, const char *version) {
             seenNonZero = 1;
         }
     }
+    if (!seenNonZero)
+        *dst++ = '0';
     *dst = 0x00;
 }
 
