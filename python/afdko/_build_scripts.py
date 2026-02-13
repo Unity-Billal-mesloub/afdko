@@ -72,6 +72,7 @@ def dynamic_metadata(field, settings, metadata):
     if use_wrapper == "ON":
         # Install Python wrapper for afdko command
         scripts["afdko"] = "afdko.invoker:main"
-        # Note: If use_wrapper == "OFF", the C++ binary will be installed by CMake
+        # Note: If use_wrapper == "OFF", the C++ binary is installed
+        # by CMake
 
     return scripts

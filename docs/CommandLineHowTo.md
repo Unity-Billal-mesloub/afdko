@@ -127,7 +127,7 @@ Get the in-line help for `compareFamily`:
 ```
 afdko compareFamily -h
 ```
-Run `checkOutlines` QA tool on the font MinionPro-Bold.otf present in the Bold subdirectory of the current directory:
+Run `checkoutlinesufo` QA tool on the font MinionPro-Bold.otf present in the Bold subdirectory of the current directory:
 ```
 afdko checkoutlinesufo Bold/MinionPro-Bold.otf
 ```
