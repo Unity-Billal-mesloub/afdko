@@ -88,16 +88,6 @@ add_library(afdko_version STATIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared/afdko_vers
 target_include_directories(afdko_version PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/c/shared)
 set_target_properties(afdko_version PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-# Option to use Python wrapper for afdko command
-# Set AFDKO_COMMAND_USE_WRAPPER=ON environment variable or -DAFDKO_COMMAND_USE_WRAPPER=ON
-# to use Python wrapper instead of C++ binary (e.g., for manylinux wheel builds
-# where Python Development.Embed is unavailable)
-if(DEFINED ENV{AFDKO_COMMAND_USE_WRAPPER})
-    set(AFDKO_COMMAND_USE_WRAPPER "$ENV{AFDKO_COMMAND_USE_WRAPPER}" CACHE BOOL "Use Python wrapper for afdko command")
-else()
-    option(AFDKO_COMMAND_USE_WRAPPER "Use Python wrapper for afdko command" OFF)
-endif()
-
 # sanitizer support
 # work around https://github.com/pypa/setuptools/issues/1928 with environment
 # variable
@@ -151,12 +141,3 @@ if(CMAKE_USE_PTHREADS_INIT)
 endif()
 
 install(TARGETS _internal LIBRARY DESTINATION afdko)
-
-# Build afdko command (C++ binary or Python wrapper)
-if(NOT AFDKO_COMMAND_USE_WRAPPER)
-    message(STATUS "Building afdko C++ binary (fast startup, requires Python Development.Embed)")
-    add_subdirectory(c/afdko)
-else()
-    message(STATUS "Using Python wrapper for afdko command (AFDKO_COMMAND_USE_WRAPPER=ON)")
-    message(STATUS "  Note: Python wrapper has slower startup but identical functionality")
-endif()

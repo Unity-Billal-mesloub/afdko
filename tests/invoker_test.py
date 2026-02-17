@@ -5,7 +5,7 @@ These tests verify:
 - Help system works correctly
 - Unknown commands are handled properly
 - C++ and Python command abbreviations work
-- Both fast path (C++) and fallback path (Python) work correctly
+- Commands are correctly dispatched to their implementations
 """
 
 import pytest
@@ -202,8 +202,8 @@ class TestPythonCommandAbbreviations:
         assert cmd_result.returncode == abbrev1_result.returncode == abbrev2_result.returncode
 
 
-class TestCppFastPath:
-    """Test that C++ commands use the fast path (no Python import overhead)."""
+class TestCppCommands:
+    """Test that C++ commands work via the invoker."""
 
     def test_cpp_commands_work(self):
         """All C++ commands work via invoker."""
@@ -258,8 +258,8 @@ class TestPythonFallback:
 class TestCommandDispatch:
     """Test that commands are dispatched correctly."""
 
-    def test_tx_version_cpp_fast_path(self):
-        """tx -v uses C++ fast path."""
+    def test_tx_version(self):
+        """tx -v works via invoker."""
         result = subprocess.run(['afdko', 'tx', '-v'],
                                capture_output=True, text=True)
         # tx -v should print version and exit
@@ -302,36 +302,3 @@ class TestBackwardsCompatibility:
         assert inv.stdout == wrap.stdout
 
 
-@pytest.mark.skipif(sys.platform == 'win32',
-                   reason="Performance testing not reliable on Windows")
-class TestPerformance:
-    """Optional performance tests to verify C++ fast path is actually fast."""
-
-    def test_cpp_faster_than_python(self):
-        """
-        C++ commands should be faster than Python commands.
-
-        This is a rough heuristic - C++ commands using fast path
-        should not have Python interpreter startup overhead.
-        """
-        import time
-
-        # Measure C++ command (fast path)
-        start = time.time()
-        subprocess.run(['afdko', 'tx', '-v'], capture_output=True)
-        cpp_time = time.time() - start
-
-        # Measure Python command (fallback path)
-        start = time.time()
-        subprocess.run(['afdko', 'makeotf', '-v'], capture_output=True)
-        python_time = time.time() - start
-
-        # C++ should be significantly faster (at least 2x)
-        # This is a rough heuristic, not a strict requirement
-        print(f"C++ command: {cpp_time:.3f}s, Python command: {python_time:.3f}s")
-        print(f"Speedup: {python_time/cpp_time:.1f}x")
-
-        # Just record the times, don't enforce strict requirement
-        # (can vary based on system load, caching, etc.)
-        assert cpp_time > 0  # Sanity check
-        assert python_time > 0  # Sanity check
