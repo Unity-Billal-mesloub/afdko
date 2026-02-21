@@ -14,7 +14,7 @@ PostScript and TrueType font data.
 
 This repository contains the data files, Python scripts, and sources for
 the command line programs that comprise the AFDKO. The project uses the
-[Apache 2.0 Open Source license](https://opensource.org/licenses/Apache-2.0).
+[Mit license](https://opensource.org/licenses/Mit).
 Please note that the AFDKO makes use of several dependencies, listed in the
 requirements.txt file, which will automatically be installed if you install
 AFDKO with `pip`. Most of these dependencies are BSD or MIT license, with
