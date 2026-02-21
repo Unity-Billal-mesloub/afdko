@@ -1,4 +1,4 @@
-![AFDKO Test Suite](https://github.com/adobe-type-tools/afdko/workflows/AFDKO%20Test%20Suite/badge.svg)
+![AFDKO Test Suite](https://github.com/Unity-Billal-mesloub/afdko/workflows/AFDKO%20Test%20Suite/badge.svg)
 
 [![Coverage](https://codecov.io/gh/adobe-type-tools/afdko/branch/develop/graph/badge.svg)](https://codecov.io/gh/adobe-type-tools/afdko/branch/develop)
 
@@ -25,7 +25,7 @@ Please refer to the
 for a more detailed description of what is included in the package.
 
 Please see the
-[wiki](https://github.com/adobe-type-tools/afdko/wiki)
+[wiki](https://github.com/Unity-Billal-mesloub/afdko/wiki)
 for additional information, such as links to reference materials and related
 projects.
 
@@ -52,7 +52,7 @@ Python. Among other reasons, some versions of macOS ship with Python 2
 and the latest version of the AFDKO is only available for Python 3. You
 can find instructions for using Brew to install Python 3 on macOS here:
 [Installing Python 3 on Mac OS X](https://docs.python-guide.org/starting/install3/osx/).
-Also: [pyenv](https://github.com/pyenv/pyenv) is a great tool for
+Also: [pyenv](https://github.com/Unity-Billal-mesloub/pyenv) is a great tool for
 installing and managing multiple Python versions on macOS.
 
 Note for all users: we **STRONGLY** recommend the use of a Python virtual
@@ -140,13 +140,13 @@ On Linux (Ubuntu 17.10 LTS or later), install these with:
 On other POSIX-like operating systems, `libuuid` and its header files
 may be in a package named `libuuid-devel` or `util-linux-libs`. The
 source code for `libuuid` is maintained in the
-[util-linux repository](https://github.com/karelzak/util-linux).
+[util-linux repository](https://github.com/Unity-Billal-mesloub/util-linux).
 
 On Windows, you need Visual Studio 2017 or later.
 
 
 To build the **afdko** from source, clone the [afdko GitHub
-repository](https://github.com/adobe-type-tools/afdko), ensure the `wheel`
+repository](https://github.com/Unity-Billal-mesloub/afdko), ensure the `wheel`
 module is installed (`python -m pip install wheel`), then `cd` to the top-level
 directory of the afdko, and run:
 
@@ -171,7 +171,7 @@ written in Python or a shell scripting language). To work around this problem
 (which really only impacts the few core afdko developers who need to get live
 feedback as they modify the source files) you can use alternative methods like
 exporting a PYTHONPATH, using a .pth file or similar hacks.
-For further details read [this comment](https://github.com/adobe-type-tools/afdko/pull/677#issuecomment-436747212).
+For further details read [this comment](https://github.com/Unity-Billal-mesloub/afdko/pull/issue).
 
 Major changes from version 2.5.x
 --------------------------------
@@ -182,7 +182,7 @@ contains its own Python interpreter.
 
 * Two programs, **IS** and **checkoutlines** were dropped because their source
 code could not be open-sourced. These tools are available in [release version
-2.5.65322 and older](https://github.com/adobe-type-tools/afdko/releases?after=2.6.22).
+2.5.65322 and older](https://github.com/Unity-Billal-mesloub/afdko/releases?after=2.6.22).
 
 **Note**
 
